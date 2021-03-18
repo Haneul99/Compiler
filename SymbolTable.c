@@ -5,7 +5,7 @@
 #define FILE_NAME "testdata.txt"
 
 #define STsize 1000
-#define HTsize 100 // ....?? º¸Åë ¼Ò¼ö·Î ÇÏÁö ¾Ê³ª...
+#define HTsize 100 // ....?? ë³´í†µ ì†Œìˆ˜ë¡œ í•˜ì§€ ì•Šë‚˜...
 
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
@@ -14,7 +14,7 @@ typedef struct HTentry {
 } HTentry;
 
 typedef enum errorTypes {
-	noerror, illsp, numerr,illid, overst //¹®Á¦¾øÀ½, ±¸ºĞÀÚ ¿À·ù, ÀÌ¸§ ¿À·ù, ¿À¹öÇÃ·Î¿ì
+	noerror, illsp, numerr, illid, overst //ë¬¸ì œì—†ìŒ, êµ¬ë¶„ì ì˜¤ë¥˜, ì´ë¦„ ì˜¤ë¥˜, ì˜¤ë²„í”Œë¡œìš°
 }errorTypes;
 
 char ST[STsize];
@@ -25,40 +25,38 @@ char seperator[9] = { ' ', '\t', '.', ',', ';', ':', '?', '!', '\n' };
 errorTypes err;
 
 char input;
+char illch;
 int start = 0, end = 0;
 
 void printError(errorTypes err) {
-	if (err == illsp) { //Áßº¹ ¸Ş¼¼Áö
-		printf("***ERROR*** ±¸ºĞÀÚ Áßº¹\n");
+	int i;
+
+	if (err == illsp) { //ì¤‘ë³µ ë©”ì„¸ì§€
+		printf("***ERROR*** êµ¬ë¶„ì ì¤‘ë³µ\n");
 	}
 	else if (err == numerr) {
-		printf("***ERROR***\t");
-		while (input != EOF && !isSeperator(input)) {
-			printf("%c", input);
-			input = fgetc(rfp);
-		}
-		printf("\t%s", "start with digit\n");
+		printf("***ERROR***\t%s\tstart with digit\n", ST+start);
 	}
 	else if (err == illid) {
-		
-
+		printf("***ERROR***\t%s\t%c is not allowed\n", ST + start, illch);
 	}
 	else if (err == overst) {
 		printf("***Error*** OVERFLOW\n");
 	}
+	else return;
 }
 
-//intialize <-- ÆÄÀÏ ¿­±â
+//intialize <-- íŒŒì¼ ì—´ê¸°
 void initialize() {
 	fopen_s(&rfp, FILE_NAME, "r");
 	if (rfp == NULL) {
-		printf("ÆÄÀÏ ¿­±â ½ÇÆĞ\n");
-		exit(1); //°­Á¦ Á¾·á
+		printf("íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨\n");
+		exit(1); //ê°•ì œ ì¢…ë£Œ
 	}
 	input = fgetc(rfp);
 }
 
-int isSeperator(char c) { //±¸ºĞÀÚ¸é 1 ¾Æ´Ï¸é 0
+int isSeperator(char c) { //êµ¬ë¶„ìë©´ 1 ì•„ë‹ˆë©´ 0
 	int i;
 	for (i = 0; i < sizeof(seperator); i++) {
 		if (c == seperator[i]) return 1;
@@ -76,8 +74,9 @@ int isNumber(char c) {
 	if (0 <= c - '0' && c - '0' <= 9) return 1;
 	else return 0;
 }
-//SkipSeperators <-- ±¸ºĞÀÚ ½ºÅµ, illegal......
-void SkipSeperators(){
+
+//SkipSeperators <-- êµ¬ë¶„ì ìŠ¤í‚µ, illegal......
+void SkipSeperators() {
 	int cnt = 0;
 	while (input != EOF && isSeperator(input)) {
 		cnt++;
@@ -90,19 +89,31 @@ void SkipSeperators(){
 }
 
 void ReadID() {
-	if (isNumber(input)) err = numerr;
-	else {
+	int invalid;
 
-		err = noerror;
-		while (input != EOF && !isSeperator(input)) {
-			if (end == STsize) {
-				err = overst;
-				break;
-			}
-			ST[end++] = input;
-			input = fgetc(rfp);
+	if (isNumber(input)) err = numerr;
+	invalid = 0;
+	while (input != EOF && !isSeperator(input)) {
+		if (end == STsize) {
+			err = overst;
+			break;
 		}
+
+		// ì˜¬ë°”ë¥´ì§€ ì•Šì€ characterìˆëŠ”ì§€ í™•ì¸
+		if (!isLetter(input) && !isNumber(input)) {
+			if (invalid == 0) {
+				illch = input;
+				invalid = 1;
+				err = illid;
+			}
+		}
+
+		ST[end++] = input;
+		input = fgetc(rfp);
 	}
+
+	if (err != overst) ST[end++] = '\0';
+
 	printError(err);
 }
 
@@ -115,31 +126,66 @@ void printHeading() {
 	printf("-----------\t-----------\n");
 }
 
+void PrintHStable(){
+	printf("\n[[ HASH TABLE ]]\n");
+
+	int i, cnt = 0;
+	HTpointer p;
+	for (i = 0; i < HTsize; i++) {
+		if (HT[i] == NULL) continue;
+
+		printf("Hash Code %2d:", i);
+		for (p = HT[i]; p != NULL; p = p->next) {
+			printf("%s\t\t", (ST + p->index));
+			cnt++;
+		}
+		printf("\n");
+	}
+
+	printf("\n<%d characters are used in the string table>\n", end - cnt);
+}
 
 int main() {
 	printHeading();
-	initialize(); //ÆÄÀÏ¿­±â
+	initialize(); //íŒŒì¼ì—´ê¸°
 
-	while (input!=EOF) {
+	while (input != EOF) {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		//ÇØ½Ã ÇÔ¼ö
 
-		if(err=noerror){
+		if (err == overst) break;  //already ë•Œë§¤ í•´ì‰¬ ë°‘ì— ë‘ì, lookupHS
+
+		// ì•„ë˜ ë¶€ë¶„ ì±„ì›Œì£¼ì„¸ìš” 
+		if (err == noerror) {
+			printf("%d\t", start);
+			for (int i = start; i < end; i++) {
+				printf("%c", ST[i]);
+			}
+			printf("\n");
 			//ComputeHS
-			//LookupHS
+			//LookupHS : ë§Œì•½ì— STì— ì•ˆë„£ì„ ê²½ìš° end = startí•˜ê³ , STì— ë„£ì„ ê²½ìš° start=end í•´ì£¼ì„¸ìš”
 			start = end;
 		}
-		
+		else {
+			end = start;
+		}
 
-		if (err == overst) break;  //already ¶§¸Å ÇØ½¬ ¹Ø¿¡ µÎÀÚ, lookupHS
-
-		
 		input = fgetc(rfp);
-		
 	}
+
+	printError(err);
+
+	HTentry* hte, *hte2;
+	hte = (HTentry*)malloc(sizeof(HTentry));
+	hte2 = (HTentry*)malloc(sizeof(HTentry));
+	hte->index = 0;
+	hte2->index = 3;
+	hte->next = hte2;
+	hte2->next = NULL;
+	HT[4] = hte;
+
+	PrintHStable();
 
 	fclose(rfp);
 }
-
