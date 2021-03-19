@@ -14,39 +14,49 @@ typedef struct HTentry {
 } HTentry;
 
 typedef enum errorTypes {
-	noerror, illsp, numerr, illid, overst //문제없음, 구분자 오류, 이름 오류, 오버플로우
+	noerror, illsp, numerr, illid, overst, longid //문제없음, 구분자 오류(구분자연속), 숫자시작오류, id알파벳오류, 오버플로우, id길이초과오류
 }errorTypes;
 
-char ST[STsize];
-HTpointer HT[HTsize];
+char ST[STsize];	// 스트링 테이블
+HTpointer HT[HTsize];	// 해쉬 테이블
 
 FILE* rfp; // file pointer
-char seperator[9] = { ' ', '\t', '.', ',', ';', ':', '?', '!', '\n' };
-errorTypes err;
 
-char input;
-char illch;
-int start = 0, end = 0;
+errorTypes err;	// 현재 에러를 담고 있는 변수
+char seperator[9] = { ' ', '\t', '.', ',', ';', ':', '?', '!', '\n' };	// 구분자 목록
+char input;	// 현재 읽고 있는 character
+char illch;	// illid 에러에 해당하는 character
+int start = 0, end = 0;	// 현재 identifier의 ST 내 시작, 끝 위치
 
-void printError(errorTypes err) {
+/* 에러 출력 */
+void printError() {
 	int i;
 
-	if (err == illsp) { //중복 메세지
-		printf("***ERROR*** 구분자 중복\n");
+	if(err == noerror) return;
+	printf("***ERROR***\t");
+
+	if (err == illsp) {		// 구분자 중복 에러
+		printf("구분자 중복\n");
 	}
-	else if (err == numerr) {
-		printf("***ERROR***\t%s\tstart with digit\n", ST+start);
+	else if(err == longid){	// id 길이 초과 에러
+		printf("%s\ttoo long identifier\n", ST+start);
 	}
-	else if (err == illid) {
-		printf("***ERROR***\t%s\t%c is not allowed\n", ST + start, illch);
+	else if (err == numerr) {	// id 숫자로 시작하는 에러
+		printf("%s\tstart with digit\n", ST+start);
 	}
-	else if (err == overst) {
-		printf("***Error*** OVERFLOW\n");
+	else if (err == illid) {	// id에 잘못된 character 에러
+		printf("%s\t%c is not allowed\n", ST + start, illch);
 	}
-	else return;
+	else if (err == overst) {	// 오버플로우 에러
+		printf("OVERFLOW\n");
+	}
+
+	// 에러 초기화
+	err = noerror;
+	return;
 }
 
-//intialize <-- 파일 열기
+/* 파일 열기 */
 void initialize() {
 	fopen_s(&rfp, FILE_NAME, "r");
 	if (rfp == NULL) {
@@ -56,7 +66,8 @@ void initialize() {
 	input = fgetc(rfp);
 }
 
-int isSeperator(char c) { //구분자면 1 아니면 0
+/* 구분자 여부 확인 */
+int isSeperator(char c) {
 	int i;
 	for (i = 0; i < sizeof(seperator); i++) {
 		if (c == seperator[i]) return 1;
@@ -64,18 +75,21 @@ int isSeperator(char c) { //구분자면 1 아니면 0
 	return 0;
 }
 
+/* 알파벳/_ 여부 확인 */
 int isLetter(char c) {
 	if ('a' <= c && c <= 'z') return 1;
 	if ('A' <= c && c <= 'z') return 1;
 	if (c == '_') return 1;
 	else return 0;
 }
+
+/* 숫자 여부 확인 */
 int isNumber(char c) {
 	if (0 <= c - '0' && c - '0' <= 9) return 1;
 	else return 0;
 }
 
-//SkipSeperators <-- 구분자 스킵, illegal......
+/* 구분자는 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
 	int cnt = 0;
 	while (input != EOF && isSeperator(input)) {
@@ -85,22 +99,28 @@ void SkipSeperators() {
 	if (cnt >= 1) err = illsp;
 	else err = noerror;
 
-	printError(err);
+	printError();
 }
 
+/* identifier 읽기 */
 void ReadID() {
-	int invalid;
+	int invalid = 0;	// 올바르지 않은 character가 있었는지 여부
+	int len = 0;		// identifier 길이
 
+	// 숫자로 시작하는 에러 체크
 	if (isNumber(input)) err = numerr;
-	invalid = 0;
+
+	// identifier 끝까지 읽기
 	while (input != EOF && !isSeperator(input)) {
-		if (end == STsize) {
+		// 오버플로우 체크
+		if (end >= STsize) {
 			err = overst;
 			break;
 		}
 
 		// 올바르지 않은 character있는지 확인
 		if (!isLetter(input) && !isNumber(input)) {
+			// 올바르지 않은 character가 여러 개 있을 경우 첫번째 것만 출력
 			if (invalid == 0) {
 				illch = input;
 				invalid = 1;
@@ -109,15 +129,34 @@ void ReadID() {
 		}
 
 		ST[end++] = input;
+		len++;
+
 		input = fgetc(rfp);
 	}
 
-	if (err != overst) ST[end++] = '\0';
+	// identifier 마지막에 널문자 추가
+	if(end >= STsize)
+		err = overst;
+	else
+		ST[end++] = '\0';
 
-	printError(err);
+	// 길이 초과 에러 체크
+	if(err != overst && len > 12) err = longid;
+
+	printError();
 }
 
-//printHeading
+/* ST에 받아두었던 id 삭제 */
+void deleteID(){
+	end = start;
+}
+
+/* ST에 받아두었던 id 저장 확정 */
+void insertID(){
+	start = end;
+}
+
+/* ST의 헤딩부분 출력 */
 void printHeading() {
 	printf("-----------\t-----------\n");
 	printf("%11s", "Index in ST");
@@ -126,6 +165,7 @@ void printHeading() {
 	printf("-----------\t-----------\n");
 }
 
+/* 해시 테이블 출력 */
 void PrintHStable(){
 	printf("\n[[ HASH TABLE ]]\n");
 
@@ -146,36 +186,39 @@ void PrintHStable(){
 }
 
 int main() {
-	printHeading();
 	initialize(); //파일열기
 
+	printHeading();
 	while (input != EOF) {
 		err = noerror;
+
+		// identifier를 읽어 ST에 넣기
 		SkipSeperators();
 		ReadID();
 
-		if (err == overst) break;  //already 때매 해쉬 밑에 두자, lookupHS
+		// ST에 오버플로우가 발생한 경우 종료
+		if (err == overst) break;
 
-		// 아래 부분 채워주세요 
 		if (err == noerror) {
+			// ST 리스트 출력용 시험용
 			printf("%d\t", start);
 			for (int i = start; i < end; i++) {
 				printf("%c", ST[i]);
 			}
 			printf("\n");
+			insertID();
+
 			//ComputeHS
-			//LookupHS : 만약에 ST에 안넣을 경우 end = start하고, ST에 넣을 경우 start=end 해주세요
-			start = end;
+			//LookupHS : 이미 존재하면 deleteID(), 새로운거면 insertID() 해주세요!
 		}
 		else {
-			end = start;
+			deleteID();
 		}
 
 		input = fgetc(rfp);
 	}
 
-	printError(err);
-
+	// 아래는 출력 시험용
 	HTentry* hte, *hte2;
 	hte = (HTentry*)malloc(sizeof(HTentry));
 	hte2 = (HTentry*)malloc(sizeof(HTentry));
@@ -185,6 +228,7 @@ int main() {
 	hte2->next = NULL;
 	HT[4] = hte;
 
+	// 해쉬테이블 출력
 	PrintHStable();
 
 	fclose(rfp);
