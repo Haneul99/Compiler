@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#define FILE_NAME "testdata1.txt"
+#define FILE_NAME "testdata2.txt"
 
 #define STsize 1000
 #define HTsize 100 
@@ -84,17 +83,18 @@ int isNumber(char c) {
 
 /* 구분자는 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
-  
+
 	while (input != EOF && isSeperator(input)) {
 		input = fgetc(rfp);
 	}
+
 }
 
 /* identifier 읽기 */
 void ReadID() {
 	int invalid = 0;	// 올바르지 않은 character가 있었는지 여부
 	int len = 0;		// identifier 길이
-
+	
 	// 숫자로 시작하는 에러 체크
 	if (isNumber(input)) err = numerr;
 
@@ -215,6 +215,7 @@ int main() {
 
 		// identifier를 읽어 ST에 넣기
 		SkipSeperators();
+		if (input == EOF) break;
 		ReadID();
 
 		// ST에 오버플로우가 발생한 경우 종료
@@ -237,12 +238,11 @@ int main() {
 				deleteID();
 			}//이미 존재
 			printf("\n");
-      
+
 		}
 		else {
 			deleteID();
 		}
-    
 		err = noerror;
 		input = fgetc(rfp);
 	}
