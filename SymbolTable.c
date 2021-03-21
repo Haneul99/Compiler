@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata4.txt"
+
+#define FILE_NAME "testdata1.txt"
 
 #define STsize 1000
-#define HTsize 100 // ....?? 보통 소수로 하지 않나...
+#define HTsize 100 
 
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
@@ -14,7 +15,7 @@ typedef struct HTentry {
 } HTentry;
 
 typedef enum errorTypes {
-	noerror, illsp, numerr, illid, overst, longid //문제없음, 구분자 오류(구분자연속), 숫자시작오류, id알파벳오류, 오버플로우, id길이초과오류
+	noerror, numerr, illid, overst, longid //문제없음, 숫자시작오류, id알파벳오류, 오버플로우, id길이초과오류
 }errorTypes;
 
 char ST[STsize];	// 스트링 테이블
@@ -30,27 +31,21 @@ int start = 0, end = 0;	// 현재 identifier의 ST 내 시작, 끝 위치
 
 /* 에러 출력 */
 void printError() {
-	int i;
-
 	if (err == noerror) return;
 	printf("***ERROR***\t");
 
-	if (err == illsp) {		// 구분자 중복 에러
-		printf("구분자 중복\n");
-	}
-	else if (err == longid) {	// id 길이 초과 에러
-		printf("%s\ttoo long identifier\n", ST + start);
+	if (err == longid) {	// id 길이 초과 에러
+		printf("%-20s\t%s\n", ST + start,"too long identifier");
 	}
 	else if (err == numerr) {	// id 숫자로 시작하는 에러
-		printf("%s\tstart with digit\n", ST + start);
+		printf("%-20s\t%s\n", ST + start, "start with digit");
 	}
 	else if (err == illid) {	// id에 잘못된 character 에러
-		printf("%s\t%c is not allowed\n", ST + start, illch);
+		printf("%-20s\t%c%s\n", ST + start, illch," is not allowed");
 	}
 	else if (err == overst) {	// 오버플로우 에러
 		printf("OVERFLOW\n");
 	}
-
 	return;
 }
 
@@ -89,15 +84,10 @@ int isNumber(char c) {
 
 /* 구분자는 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
-	int cnt = 0;
+  
 	while (input != EOF && isSeperator(input)) {
-		cnt++;
 		input = fgetc(rfp);
 	}
-	if (cnt >= 1) err = illsp;
-	else err = noerror;
-
-	printError();
 }
 
 /* identifier 읽기 */
@@ -173,7 +163,7 @@ int LookupHS(int hscode, int start, int end) {
 }//이미 HT에 존재하는지 확인.
 
 void ADDHT(int hscode, int start) {
-	HTentry *hte = (HTentry*)malloc(sizeof(HTentry));
+	HTentry* hte = (HTentry*)malloc(sizeof(HTentry));
 	hte->index = start;
 	hte->next = NULL;
 
@@ -189,16 +179,16 @@ void ADDHT(int hscode, int start) {
 
 /* ST의 헤딩부분 출력 */
 void printHeading() {
-	printf("-----------\t-----------\n");
-	printf("%11s", "Index in ST");
+	printf("------------\t------------\n");
+	printf("%s", "Index in ST");
 	printf("\t");
-	printf("%11s", "identifier\n");
-	printf("-----------\t-----------\n");
+	printf("%s", "identifier\n");
+	printf("------------\t------------\n");
 }
 
 /* 해시 테이블 출력 */
 void PrintHStable() {
-	printf("\n[[ HASH TABLE ]]\n");
+	printf("\n\n[[ HASH TABLE ]]\n\n");
 
 	int i, cnt = 0;
 	HTpointer p;
@@ -207,13 +197,13 @@ void PrintHStable() {
 
 		printf("Hash Code %2d:", i);
 		for (p = HT[i]; p != NULL; p = p->next) {
-			printf("%s\t\t", (ST + p->index));
+			printf("%s   ", (ST + p->index));
 			cnt++;
 		}
 		printf("\n");
 	}
 
-	printf("\n<%d characters are used in the string table>\n", end - cnt);
+	printf("\n<%d characters are used in the string table>\n", end); 
 }
 
 int main() {
@@ -235,41 +225,28 @@ int main() {
 			int exist = LookupHS(hscode, start, end);
 			if (exist == -1) {
 				printf("%d\t\t", start);
-				for (int i = start; i < end; i++) {
-					printf("%c", ST[i]);
-				}
-				printf("\t\t\t(entered)");
+				printf("%-20s", ST + start);
+				printf("\t%s", "(entered)");
 				ADDHT(hscode, start);
 				insertID();
 			}//새로 삽입
 			else {
 				printf("%d\t\t", exist);
-				for (int i = start; i < end; i++) {
-					printf("%c", ST[i]);
-				}
-				printf("\t\t\t(already existed)");
+				printf("%-20s", ST + start);
+				printf("\t%s", "(already entered)");
 				deleteID();
 			}//이미 존재
 			printf("\n");
+      
 		}
 		else {
 			deleteID();
 		}
-
+    
+		err = noerror;
 		input = fgetc(rfp);
 	}
 
-	// 아래는 출력 시험용
-	/*
-	HTentry* hte, *hte2;
-	hte = (HTentry*)malloc(sizeof(HTentry));
-	hte2 = (HTentry*)malloc(sizeof(HTentry));
-	hte->index = 0;
-	hte2->index = 3;
-	hte->next = hte2;
-	hte2->next = NULL;
-	HT[4] = hte;
-	*/
 	// 해쉬테이블 출력
 	PrintHStable();
 	fclose(rfp);
