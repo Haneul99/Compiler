@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata.txt"
+#define FILE_NAME "testdata4.txt"
 
 #define STsize 1000
 #define HTsize 100 // ....?? 보통 소수로 하지 않나...
@@ -32,17 +32,17 @@ int start = 0, end = 0;	// 현재 identifier의 ST 내 시작, 끝 위치
 void printError() {
 	int i;
 
-	if(err == noerror) return;
+	if (err == noerror) return;
 	printf("***ERROR***\t");
 
 	if (err == illsp) {		// 구분자 중복 에러
 		printf("구분자 중복\n");
 	}
-	else if(err == longid){	// id 길이 초과 에러
-		printf("%s\ttoo long identifier\n", ST+start);
+	else if (err == longid) {	// id 길이 초과 에러
+		printf("%s\ttoo long identifier\n", ST + start);
 	}
 	else if (err == numerr) {	// id 숫자로 시작하는 에러
-		printf("%s\tstart with digit\n", ST+start);
+		printf("%s\tstart with digit\n", ST + start);
 	}
 	else if (err == illid) {	// id에 잘못된 character 에러
 		printf("%s\t%c is not allowed\n", ST + start, illch);
@@ -51,8 +51,6 @@ void printError() {
 		printf("OVERFLOW\n");
 	}
 
-	// 에러 초기화
-	err = noerror;
 	return;
 }
 
@@ -135,25 +133,58 @@ void ReadID() {
 	}
 
 	// identifier 마지막에 널문자 추가
-	if(end >= STsize)
+	if (end >= STsize)
 		err = overst;
 	else
 		ST[end++] = '\0';
 
 	// 길이 초과 에러 체크
-	if(err != overst && len > 12) err = longid;
+	if (err != overst && len > 12) err = longid;
 
 	printError();
 }
 
 /* ST에 받아두었던 id 삭제 */
-void deleteID(){
+void deleteID() {
 	end = start;
 }
 
 /* ST에 받아두었던 id 저장 확정 */
-void insertID(){
+void insertID() {
 	start = end;
+}
+
+int ComputeHS(int start, int end) {
+	int asciisum = 0;
+	for (int i = start; i < end; i++) {
+		asciisum += ST[i];
+	}
+	return asciisum % HTsize;
+}
+
+int LookupHS(int hscode, int start, int end) {
+	HTpointer p = HT[hscode];
+	char str[22];
+	strncpy(str, ST + start, end - start);
+	for (; p != NULL; p = p->next) {
+		if (!strcmp(ST + p->index, str)) return p->index;//존재하는 경우
+	}
+	return -1;//존재하지 않는 경우
+}//이미 HT에 존재하는지 확인.
+
+void ADDHT(int hscode, int start) {
+	HTentry *hte = (HTentry*)malloc(sizeof(HTentry));
+	hte->index = start;
+	hte->next = NULL;
+
+	HTpointer p = HT[hscode];
+	if (p == NULL) {
+		HT[hscode] = hte;
+	}
+	else {
+		hte->next = p;
+		HT[hscode] = hte;
+	}//chain의 head에 추가해야함
 }
 
 /* ST의 헤딩부분 출력 */
@@ -166,7 +197,7 @@ void printHeading() {
 }
 
 /* 해시 테이블 출력 */
-void PrintHStable(){
+void PrintHStable() {
 	printf("\n[[ HASH TABLE ]]\n");
 
 	int i, cnt = 0;
@@ -200,16 +231,26 @@ int main() {
 		if (err == overst) break;
 
 		if (err == noerror) {
-			// ST 리스트 출력용 시험용
-			printf("%d\t", start);
-			for (int i = start; i < end; i++) {
-				printf("%c", ST[i]);
-			}
+			int hscode = ComputeHS(start, end);
+			int exist = LookupHS(hscode, start, end);
+			if (exist == -1) {
+				printf("%d\t\t", start);
+				for (int i = start; i < end; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("\t\t\t(entered)");
+				ADDHT(hscode, start);
+				insertID();
+			}//새로 삽입
+			else {
+				printf("%d\t\t", exist);
+				for (int i = start; i < end; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("\t\t\t(already existed)");
+				deleteID();
+			}//이미 존재
 			printf("\n");
-			insertID();
-
-			//ComputeHS
-			//LookupHS : 이미 존재하면 deleteID(), 새로운거면 insertID() 해주세요!
 		}
 		else {
 			deleteID();
@@ -219,6 +260,7 @@ int main() {
 	}
 
 	// 아래는 출력 시험용
+	/*
 	HTentry* hte, *hte2;
 	hte = (HTentry*)malloc(sizeof(HTentry));
 	hte2 = (HTentry*)malloc(sizeof(HTentry));
@@ -227,9 +269,8 @@ int main() {
 	hte->next = hte2;
 	hte2->next = NULL;
 	HT[4] = hte;
-
+	*/
 	// 해쉬테이블 출력
 	PrintHStable();
-
 	fclose(rfp);
 }
