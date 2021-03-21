@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define FILE_NAME "testdata1.txt"
 
 #define STsize 1000
@@ -83,11 +84,10 @@ int isNumber(char c) {
 
 /* 구분자는 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
-
+  
 	while (input != EOF && isSeperator(input)) {
 		input = fgetc(rfp);
 	}
-
 }
 
 /* identifier 읽기 */
@@ -237,11 +237,12 @@ int main() {
 				deleteID();
 			}//이미 존재
 			printf("\n");
-
+      
 		}
 		else {
 			deleteID();
 		}
+    
 		err = noerror;
 		input = fgetc(rfp);
 	}
