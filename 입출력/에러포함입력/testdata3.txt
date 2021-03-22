@@ -1,6 +1,6 @@
-3abc 3abc 3abc abc3abc3abc3abc3
-phone_!Phone_?2
-1?2?3?_1;_2;_3!!!
-co3co co1co
-1+1=2 2+2=4 3+3=?
-a+a=b a_puls_a_is_b
+if (end >= STsize)
+	err = overst;
+else if
+	ST[end++] = 3;
+else
+	return;
