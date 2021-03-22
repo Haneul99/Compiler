@@ -11,23 +11,25 @@
 
 #define FILE_NAME "testdata.txt"
 
-#define STsize 30
+#define STsize 1000
 #define HTsize 100 
 
+/* HT 관련 구조체 */
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
 	int index;			// ST내 시작 인덱스
 	HTpointer next;		// 다음 id 포인터
 } HTentry;
 
+/* 에러 정의 열거형 */
 typedef enum errorTypes {
-	noerror, numerr, illid, overst, longid		//문제없음, 숫자시작오류, id알파벳오류, 오버플로우, id길이초과오류
+	noerror, illsp, swdigit, illid, longid, overst		//문제없음, 구분자연속, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
 }errorTypes;
 
 char ST[STsize];		// 스트링 테이블
 HTpointer HT[HTsize];	// 해쉬 테이블
 
-FILE* rfp; // 파일 포인터
+FILE* rfp;				// 파일 포인터
 
 char seperator[9] = { ' ', '\t', '.', ',', ';', ':', '?', '!', '\n' };	// 구분자 목록
 char input;					// 현재 읽고 있는 character
@@ -41,10 +43,13 @@ void printError() {
 
 	printf("***ERROR***\t");
 
-	if (err == longid) {		// id 길이 초과 에러
+	if (err == illsp) {			// 구분자만 연속하여 들어오는 에러
+		printf("%-20s\t\n", "consecutive delimiters");
+	}
+	else if (err == longid) {	// id 길이 초과 에러
 		printf("%-20s\t%s\n", ST + start, "too long identifier");
 	}
-	else if (err == numerr) {	// id 숫자로 시작하는 에러
+	else if (err == swdigit) {	// id 숫자로 시작하는 에러
 		printf("%-20s\t%s\n", ST + start, "start with digit");
 	}
 	else if (err == illid) {	// id에 잘못된 character 에러
@@ -81,7 +86,7 @@ int isSeperator(char c) {
 /* 알파벳/_ 여부 확인 */
 int isLetter(char c) {
 	if ('a' <= c && c <= 'z') return 1;
-	if ('A' <= c && c <= 'z') return 1;
+	if ('A' <= c && c <= 'Z') return 1;
 	if (c == '_') return 1;
 
 	return 0;
@@ -89,24 +94,33 @@ int isLetter(char c) {
 
 /* 숫자 여부 확인 */
 int isNumber(char c) {
-	if (0 <= c - '0' && c - '0' <= 9) return 1;
+	if ('0' <= c && c <= '9') return 1;
 	else return 0;
 }
 
 /* 구분자들은 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
+	int cnt = 1;
 	while (input != EOF && isSeperator(input)) {
 		input = fgetc(rfp);
+		cnt++;
+	}
+	
+	// illsp(구분자연속) 에러 확인
+	if (cnt > 1) {
+		err = illsp;
+		printError();
 	}
 }
 
 /* identifier 읽기 */
 void ReadID() {
+	err = noerror;
 	int invalid = 0;	// 올바르지 않은 character가 있었는지 여부
 	int len = 0;		// identifier 길이
 
 	// 숫자로 시작하는 에러 체크
-	if (isNumber(input)) err = numerr;
+	if (isNumber(input)) err = swdigit;
 
 	// identifier 끝까지 읽기
 	while (input != EOF && !isSeperator(input)) {
@@ -141,6 +155,7 @@ void ReadID() {
 	// 길이 초과 에러 체크
 	if (err != overst && len > 12) err = longid;
 
+	// id 관련 에러 출력
 	printError();
 }
 
@@ -169,9 +184,9 @@ int LookupHS(int hscode, int start, int end) {
 	char str[22];
 	strncpy(str, ST + start, end - start);
 	for (; p != NULL; p = p->next) {
-		if (!strcmp(ST + p->index, str)) return p->index;//존재하는 경우
+		if (!strcmp(ST + p->index, str)) return p->index;	//존재하는 경우
 	}
-	return -1;//존재하지 않는 경우
+	return -1;	//존재하지 않는 경우
 }
 
 /* HT에 추가 */
@@ -225,11 +240,9 @@ void PrintHStable() {
 
 int main() {
 	initialize(); //파일열기
-
 	printHeading();
+	
 	while (input != EOF) {
-		err = noerror;
-
 		// identifier를 읽어 ST에 넣기
 		SkipSeperators();
 		if (input == EOF) break;
