@@ -8,5 +8,11 @@
       
 3. illsp error는 구분자가 연속하여 들어오는 경우
       ex) ab?!?cd: ?!?에서 illsp error 출력
-      
-따라서 aa!&???ab의 경우 aa정상, !정상, &는 illid, ???는 illsp, ab정상 으로 처리
+
+따라서 aa!&@@???ab의 경우 aa정상, !정상, &@@는 & is not allowed, ???는 illsp, ab정상 으로 처리
+
+4. identifier에서 발생할 수 있는 에러는 3가지(longid, swdigit, illid), 에러가 중복하여 발생하여도 에러 우선순위가 높은 한 가지만을 출력
+      id관련 에러 우선순위: longid > illid > swdigit
+      ex) aaaaaaaaaaaaaaaaaa#: longid error
+      ex) 1111111111111111aaa: longid error
+      ex) 111#: illid error
