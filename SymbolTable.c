@@ -100,12 +100,12 @@ int isNumber(char c) {
 
 /* 구분자들은 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
-	int cnt = 1;
+	int cnt = 0;
 	while (input != EOF && isSeperator(input)) {
-		input = fgetc(rfp);
 		cnt++;
+		input = fgetc(rfp);
 	}
-	
+
 	// illsp(구분자연속) 에러 확인
 	if (cnt > 1) {
 		err = illsp;
@@ -241,7 +241,7 @@ void PrintHStable() {
 int main() {
 	initialize(); //파일열기
 	printHeading();
-	
+
 	while (input != EOF) {
 		// identifier를 읽어 ST에 넣기
 		SkipSeperators();
@@ -283,7 +283,6 @@ int main() {
 		}
 
 		err = noerror;
-		input = fgetc(rfp);
 	}
 
 	// 해쉬테이블 출력
