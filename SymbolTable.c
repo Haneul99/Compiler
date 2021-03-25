@@ -23,7 +23,8 @@ typedef struct HTentry {
 
 /* 에러 정의 열거형 */
 typedef enum errorTypes {
-	noerror, illsp, swdigit, illid, longid, overst		//문제없음, 구분자연속, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
+	//문제없음, 구분자연속, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
+	noerror, illsp, swdigit, illid, longid, overst
 }errorTypes;
 
 char ST[STsize];		// 스트링 테이블
@@ -33,7 +34,6 @@ FILE* rfp;				// 파일 포인터
 
 char seperator[9] = { ' ', '\t', '.', ',', ';', ':', '?', '!', '\n' };	// 구분자 목록
 char input;					// 현재 읽고 있는 character
-int invalid = 0;            //illid 에러에 해당되는 글자 개수
 int start = 0, end = 0;		// 현재 identifier의 ST 내 시작, 끝 위치
 errorTypes err;				// 현재 에러를 담고 있는 변수
 
@@ -53,25 +53,19 @@ void printError() {
 		printf("%-20s\t%s\n", ST + start, "start with digit");
 	}
 	else if (err == illid) {	// id에 잘못된 character 에러
-		printf("%-20s\t", ST + start);	//잘못된 identifier
+		printf("%-20s\t", ST + start);
 
-		for (int i = start; i < end; i++) {		//잘못된 character 출력
+		for (int i = start; i < end - 1; i++) {	//잘못된 character들 출력
 			if (!isLetter(ST[i]) && !isNumber(ST[i])) {
-				printf("%c", ST[i]);
-				if (invalid != 1) {
-					printf(",");
-					invalid--;
-				}
+				printf("%c ", ST[i]);
 			}
 		}
-		printf(" is not allowed\n");
+		printf("is not allowed\n");
 	}
 	else if (err == overst) {	// 오버플로우 에러
 		printf("OVERFLOW\n");
 	}
 
-	invalid = 0; //longid오류와 illid오류가 같이 일어난 경우 longid로 출력이 되는데
-				//모든 경우에 invalid가 0으로 바뀌어야 하기 때문
 	return;
 }
 
@@ -129,8 +123,6 @@ void SkipSeperators() {
 /* identifier 읽기 */
 void ReadID() {
 	err = noerror;
-	//int invalid = 0;	// 올바르지 않은 character가 있었는지 여부
-	int len = 0;		// identifier 길이
 
 	// 숫자로 시작하는 에러 체크
 	if (isNumber(input)) err = swdigit;
@@ -144,14 +136,10 @@ void ReadID() {
 		}
 
 		// 올바르지 않은 character있는지 확인
-		if (!isLetter(input) && !isNumber(input)) {
-			invalid++; //잘못된 글자의 수가 몇개인지 체크
+		if (!isLetter(input) && !isNumber(input))
 			err = illid;
-		}
 
 		ST[end++] = input;
-		len++;
-
 		input = fgetc(rfp);
 	}
 
@@ -162,7 +150,7 @@ void ReadID() {
 		ST[end++] = '\0';
 
 	// 길이 초과 에러 체크
-	if (err != overst && len > 12) err = longid;
+	if (err != overst && (end - start - 1) > 12) err = longid;
 
 	// id 관련 에러 출력
 	printError();
