@@ -12,4 +12,4 @@
       ex) 1111111111111111aaa: longid error
       ex) 111#: illid error
 
-4. character 개수는 널문자를 포함하여 
+4. character 개수는 널문자를 포함하여 카운트하였음
