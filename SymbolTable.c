@@ -39,6 +39,8 @@ errorTypes err;				// 현재 에러를 담고 있는 변수
 
 /* 에러 출력 */
 void printError() {
+	int i;
+
 	if (err == noerror) return;
 
 	printf("***ERROR***\t");
@@ -55,7 +57,7 @@ void printError() {
 	else if (err == illid) {	// id에 잘못된 character 에러
 		printf("%-20s\t", ST + start);
 
-		for (int i = start; i < end - 1; i++) {	//잘못된 character들 출력
+		for (i = start; i < end - 1; i++) {	//잘못된 character들 출력
 			if (!isLetter(ST[i]) && !isNumber(ST[i])) {
 				printf("%c ", ST[i]);
 			}
@@ -168,8 +170,8 @@ void insertID() {
 
 /* 해시함수 */
 int ComputeHS(int start, int end) {
-	int asciisum = 0;
-	for (int i = start; i < end; i++) {
+	int asciisum = 0, i;
+	for (i = start; i < end; i++) {
 		asciisum += ST[i];
 	}
 	return asciisum % HTsize;
