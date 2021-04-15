@@ -23,8 +23,8 @@ typedef struct HTentry {
 
 /* 에러 정의 열거형 */
 typedef enum errorTypes {
-	//문제없음, 구분자연속, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
-	noerror, illsp, swdigit, illid, longid, overst
+	//문제없음, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
+	noerror, swdigit, illid, longid, overst
 }errorTypes;
 
 char ST[STsize];		// 스트링 테이블
@@ -45,10 +45,7 @@ void printError() {
 
 	printf("***ERROR***\t");
 
-	if (err == illsp) {			// 구분자만 연속하여 들어오는 에러
-		printf("%-20s\t\n", "consecutive delimiters");
-	}
-	else if (err == longid) {	// id 길이 초과 에러
+	if (err == longid) {	// id 길이 초과 에러
 		printf("%-20s\t%s\n", ST + start, "too long identifier");
 	}
 	else if (err == swdigit) {	// id 숫자로 시작하는 에러
@@ -109,16 +106,8 @@ int isNumber(char c) {
 
 /* 구분자들은 스킵하고 다음 identifier 시작위치까지 이동 */
 void SkipSeperators() {
-	int cnt = 0;
 	while (input != EOF && isSeperator(input)) {
-		cnt++;
 		input = fgetc(rfp);
-	}
-
-	// illsp(구분자연속) 에러 확인
-	if (cnt > 1) {
-		err = illsp;
-		printError();
 	}
 }
 
