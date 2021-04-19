@@ -73,11 +73,15 @@ NZEROD  [1-9]
                                         return(TIDENT);
                                     }
                                 }
-[+-]?{NZEROD}{D}*               return(TNUMBER);
-[+-]?(0|{NZEROD}{D}*)\.{D}+     return(TRNUMBER);
-"/*"([^*]|\*+[^*/])*\**"*/"     ; 
+[+-]?{D}+                       return(TNUMBER);
+[+-]?{D}+"."{D}+                return(TRNUMBER);
+"/*"([^*]|\*+[^*/])*\**"*/"     {
+                                    int i;
+                                    for(i = 0; i < yyleng; i++)
+                                        if(yytext[i] == '\n') lineCount++;
+                                } 
 "//".*                          ;
-[^ \t\n"//""/*"]+                       return(TERROR);
+[^ \t\n"//""/*"]+               return(TERROR);
 %%
 int lineCount = 1;
 void main(){
