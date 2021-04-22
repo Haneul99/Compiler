@@ -1,0 +1,64 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "glob.h"
+
+ /* 알파벳/_ 여부 확인 */
+int isLetter(char c) {
+	if ('a' <= c && c <= 'z') return 1;
+	if ('A' <= c && c <= 'Z') return 1;
+	if (c == '_') return 1;
+
+	return 0;
+}
+
+/* 숫자 여부 확인 */
+int isNumber(char c) {
+	if ('0' <= c && c <= '9') return 1;
+	else return 0;
+}
+
+//에러 종류: swdigit, illid, longid, overst
+
+//에러 검사
+void checkError(char* word) {
+	if (err == overst);
+	else if (yyleng > 12) err = longid;
+	else if (word[0] >= '0' && word[0] <= '9') err = swdigit;
+	else err = illid;
+}
+
+/*에러 출력 */
+void printError(char* word) {
+	checkError(word);
+	if (err == longid) { //12자 이상
+		printf("%d\t",lineCount);
+		printf("%20s", "***error***");
+		printf("%10s", "");
+		printf("%s %s\n",yytext,"is too long identifier");
+	}
+	else if (err == swdigit) {
+		printf("%d\t", lineCount);
+		printf("%20s", "***error***");
+		printf("%10s", "");
+		printf("%s ", yytext);
+		printf(" Illegal IDENT\n");
+	}
+	else if (err == illid) {
+		printf("%d\t", lineCount);
+		printf("%20s", "***error***");
+		printf("%10s", "");
+		int i;
+		for (i = 0; i < strlen(word); i++) {
+			if (!(isLetter(word[i]) || isNumber(word[i]))) {
+				printf("%c ", word[i]);
+			}
+		}
+		printf("Illegal Character\n");
+	}
+	else if (err==overst) {
+		printf("***Error*** Overflow!!\n");
+	}
+
+}
