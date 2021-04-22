@@ -116,9 +116,11 @@ void SymbolTable(){
 	if (exist == -1) {
 		ADDHT(hscode, start);
 		printf("%s is stored at ST[%d]\n", ST + start, start);
-		insertID();
+		insertflag = 1;
+		//insertID();
 	}
 	else{
-		deleteID();
+		insertflag = 0;
+		//deleteID();
 	}
 }

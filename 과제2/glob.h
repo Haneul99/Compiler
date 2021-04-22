@@ -20,6 +20,8 @@ typedef enum errorTypes {
 	noerror, swdigit, illid, longid, overst
 }errorTypes;
 
+void insertID();
+void deleteID();
 void SymbolTable();
 void printError();
 
@@ -30,3 +32,4 @@ extern char ST[STsize];		        // 스트링 테이블
 extern HTpointer HT[HTsize];	    // 해쉬 테이블
 extern int start, end;		        // 현재 identifier의 ST 내 시작, 끝 위치
 extern int lineCount;               // 라인 수
+extern int insertflag;

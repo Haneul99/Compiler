@@ -39,21 +39,21 @@ void checkError(char* word) {
 void printError() {
 	checkError(yytext);
 	if (err == longid) { //12자 이상
-		printf("%d\t",lineCount);
-		printf("%20s", "***error***");
-		printf("%10s", "");
+		printf("%-22d",lineCount);
+		printf("%-22s", "***error***");
+		printf("%-22s", "");
 		printf("%s %s\n",yytext,"is too long identifier");
 	}
 	else if (err == swdigit) {
-		printf("%d\t", lineCount);
-		printf("%20s", "***error***");
-		printf("%10s", "");
+		printf("%-22d", lineCount);
+		printf("%-22s", "***error***");
+		printf("%-22s", "");
 		printf("%s ", yytext);
 		printf(" Illegal IDENT\n");
 	}
 	else if (err == illid) {
-		printf("%d\t", lineCount);
-		printf("%20s", "***error***");
+		printf("%-22d", lineCount);
+		printf("%-22s", "***error***");
 		printf("%10s", "");
 		int i;
 		for (i = 0; i < strlen(yytext); i++) {
