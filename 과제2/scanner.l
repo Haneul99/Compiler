@@ -59,7 +59,6 @@ NZEROD  [1-9]
 " "             return(TBLANK);
 "\t"            return(TTAB);
 "\n"            {
-                    lineCount++;
                     return(TNEWLINE);
                 }
 

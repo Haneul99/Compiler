@@ -857,13 +857,12 @@ case 40:
 YY_RULE_SETUP
 #line 61 "scanner.l"
 {
-                    lineCount++;
                     return(TNEWLINE);
                 }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 66 "scanner.l"
+#line 65 "scanner.l"
 {
                                     if(yyleng > 12){
                                         err = longid;
@@ -877,17 +876,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 76 "scanner.l"
+#line 75 "scanner.l"
 return(TNUMBER);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 77 "scanner.l"
+#line 76 "scanner.l"
 return(TRNUMBER);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "scanner.l"
+#line 77 "scanner.l"
 {
                                     int i;
                                     for(i = 0; i < yyleng; i++)
@@ -896,20 +895,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 83 "scanner.l"
+#line 82 "scanner.l"
 ;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 84 "scanner.l"
+#line 83 "scanner.l"
 return(TERROR);
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 85 "scanner.l"
+#line 84 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 913 "lex.yy.c"
+#line 912 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1769,7 +1768,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 85 "scanner.l"
+#line 84 "scanner.l"
 
 int yywrap()
 {
