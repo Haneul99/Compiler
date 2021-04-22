@@ -1,1 +1,0 @@
-delimiter spaces tabs	period.comma,semicolon;colon:Qmark?Emark!newline

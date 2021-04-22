@@ -1,0 +1,6 @@
+if (end >= STsize)
+	err = overst;
+else if
+	ST[end++] = 3;
+else
+	return;
