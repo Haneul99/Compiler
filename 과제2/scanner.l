@@ -83,24 +83,6 @@ NZEROD  [1-9]
 "//".*                          ;
 [^ \t\n"//""/*"]+               return(TERROR);
 %%
-int lineCount = 1;
-void main(){
-    enum tnumber tn;
-
-    while((tn = yylex()) != TEOF){
-        switch(tn){
-            case TIF: printf("TIF: %s", yytext); break;
-            case TNUMBER: printf("TNUMBER: %s\n", yytext); break;
-            case TRNUMBER: printf("TRNUMBER: %s\n", yytext); break;
-            case TIDENT: printf("TIDENT: %s\n", yytext); break;
-            case TERROR: printf("TERROR: %s\n", yytext); printError(); break;
-            case TBLANK: printf("TBLANK\n"); break;
-            case TTAB: printf("TTAB\n"); break;
-            case TNEWLINE: printf("TNEWLINE\n"); break;
-        }
-    }
-    printf("Total %d lines\n", lineCount);
-}
 int yywrap()
 {
     return 1;
