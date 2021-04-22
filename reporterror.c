@@ -1,3 +1,9 @@
+/*
+ * reporterror.c - printing error
+ * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
+ * date -
+ */
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,8 +36,8 @@ void checkError(char* word) {
 }
 
 /*에러 출력 */
-void printError(char* word) {
-	checkError(word);
+void printError() {
+	checkError(yytext);
 	if (err == longid) { //12자 이상
 		printf("%d\t",lineCount);
 		printf("%20s", "***error***");
@@ -50,9 +56,9 @@ void printError(char* word) {
 		printf("%20s", "***error***");
 		printf("%10s", "");
 		int i;
-		for (i = 0; i < strlen(word); i++) {
-			if (!(isLetter(word[i]) || isNumber(word[i]))) {
-				printf("%c ", word[i]);
+		for (i = 0; i < strlen(yytext); i++) {
+			if (!(isLetter(yytext[i]) || isNumber(yytext[i]))) {
+				printf("%c ", yytext[i]);
 			}
 		}
 		printf("Illegal Character\n");
