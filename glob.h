@@ -21,6 +21,7 @@ typedef enum errorTypes {
 }errorTypes;
 
 void SymbolTable();
+void printError(char* word);
 
 extern char *yytext;
 extern int yyleng;
