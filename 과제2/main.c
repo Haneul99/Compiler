@@ -64,7 +64,7 @@ void printtoken(enum tnumber tn) {
 
    case TBLANK: printf("%-22s%-22s%-22s", "TBLANK", "", yytext); break;
    case TTAB: printf("%-22s%-22s%-22s", "TTAB", "", yytext); break;
-   case TNEWLINE: printf("%-22s%-22s%-22s", "TNEWLINE", "", yytext); break;
+   case TNEWLINE: printf("%-22s%-22s", "TNEWLINE", ""); lineCount++;  break;
 
    case TINC: printf("%-22s%-22s%-22s", "TINC", "", yytext); break;
    case TDEC: printf("%-22s%-22s%-22s", "TDEC", "", yytext); break;
