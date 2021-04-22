@@ -93,7 +93,7 @@ void main(){
             case TNUMBER: printf("TNUMBER: %s\n", yytext); break;
             case TRNUMBER: printf("TRNUMBER: %s\n", yytext); break;
             case TIDENT: printf("TIDENT: %s\n", yytext); break;
-            case TERROR: printf("TERROR: %s\n", yytext); printError(yytext); break;
+            case TERROR: printf("TERROR: %s\n", yytext); printError(); break;
             case TBLANK: printf("TBLANK\n"); break;
             case TTAB: printf("TTAB\n"); break;
             case TNEWLINE: printf("TNEWLINE\n"); break;
