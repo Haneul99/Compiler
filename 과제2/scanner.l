@@ -72,8 +72,8 @@ NZEROD  [1-9]
                                         return(TIDENT);
                                     }
                                 }
-[+-]?{D}+                       return(TNUMBER);
-[+-]?{D}+"."{D}+                return(TRNUMBER);
+{D}+                       return(TNUMBER);
+{D}+"."{D}+                return(TRNUMBER);
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     int i;
                                     for(i = 0; i < yyleng; i++)
