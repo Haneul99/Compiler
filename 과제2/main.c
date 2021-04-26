@@ -8,8 +8,8 @@
 #include "tn.h"
 #include "glob.h"
 
-int lineCount = 1;
-int cErrors = 0;
+int lineCount = 1;   // 라인 수
+int cErrors = 0;     // 에러 수
 
 /* printtoken
    : 토큰 타입 별로 출력한다
@@ -18,6 +18,7 @@ void printtoken(enum tnumber tn) {
    printf("%-22d", lineCount);
 
    switch (tn) {
+   // 예약어
    case TCONST: printf("%-22s%-22s%-22s", "TCONST","", yytext); break;
    case TELSE: printf("%-22s%-22s%-22s", "TELSE", "", yytext); break;
    case TIF: printf("%-22s%-22s%-22s", "TIF", "", yytext); break;
@@ -26,12 +27,14 @@ void printtoken(enum tnumber tn) {
    case TVOID: printf("%-22s%-22s%-22s", "TVOID", "", yytext); break;
    case TWHILE: printf("%-22s%-22s%-22s", "TWHILE", "", yytext); break;
 
+   // 산술 연산자
    case TADD: printf("%-22s%-22s%-22s", "TADD", "", yytext); break;
    case TSUB: printf("%-22s%-22s%-22s", "TSUB", "", yytext); break;
    case TMUL: printf("%-22s%-22s%-22s", "TMUL", "", yytext); break;
    case TDIV: printf("%-22s%-22s%-22s", "TDIV", "", yytext); break;
    case TMOD: printf("%-22s%-22s%-22s", "TMOD", "", yytext); break;
 
+   // 대입 연산자
    case TASSIGN: printf("%-22s%-22s%-22s", "TASSIGN", "", yytext); break;
    case TADDASSIGN: printf("%-22s%-22s%-22s", "TADDASSIGN", "", yytext); break;
    case TSUBASSIGN: printf("%-22s%-22s%-22s", "TSUBASSIGN", "", yytext); break;
@@ -39,10 +42,12 @@ void printtoken(enum tnumber tn) {
    case TDIVASSIGN: printf("%-22s%-22s%-22s", "TDIVASSIGN", "", yytext); break;
    case TMODASSIGN: printf("%-22s%-22s%-22s", "TMODASSIGN", "", yytext); break;
 
+   // 논리 연산자
    case TNOT: printf("%-22s%-22s%-22s", "TNOT", "", yytext); break;
    case TAND: printf("%-22s%-22s%-22s", "TAND", "", yytext); break;
    case TOR: printf("%-22s%-22s%-22s", "TOR", "", yytext); break;
 
+   // 비교연산자
    case TEQUAL: printf("%-22s%-22s%-22s", "TEQUAL", "", yytext); break;
    case TNOTEQU: printf("%-22s%-22s%-22s", "TNOTEQU", "", yytext); break;
    case TLESS: printf("%-22s%-22s%-22s", "TLESS", "", yytext); break;
@@ -50,6 +55,7 @@ void printtoken(enum tnumber tn) {
    case TLESSE: printf("%-22s%-22s%-22s", "TLESSE", "", yytext); break;
    case TGREATE: printf("%-22s%-22s%-22s", "TGREATE", "", yytext); break;
 
+   // 소, 중, 대괄호 및 콤마, 세미콜론
    case TBRASL: printf("%-22s%-22s%-22s", "TBRASL", "", yytext); break;
    case TBRASR: printf("%-22s%-22s%-22s", "TBRASR", "", yytext); break;
    case TBRAML: printf("%-22s%-22s%-22s", "TBRAML", "", yytext); break;
@@ -59,9 +65,11 @@ void printtoken(enum tnumber tn) {
    case TCOMMA: printf("%-22s%-22s%-22s", "TCOMMA", "", yytext); break;
    case TSEMICOLON: printf("%-22s%-22s%-22s", "TSEMICOLON", "", yytext); break;
 
+   // 증감 연산자
    case TINC: printf("%-22s%-22s%-22s", "TINC", "", yytext); break;
    case TDEC: printf("%-22s%-22s%-22s", "TDEC", "", yytext); break;
 
+   // Identifier
    case TIDENT:
       if(overflow){  // ST overflow 발생한 경우
          printOverflowError();
@@ -70,9 +78,11 @@ void printtoken(enum tnumber tn) {
       else printf("%-22s%-22d%-22s", "TIDENT", stindex, yytext);
       break;
 
+   // 상수
    case TNUMBER: printf("%-22s%-22s%-22s", "TNUMBER", "", yytext); break;
    case TRNUMBER: printf("%-22s%-22s%-22s", "TRNUMBER", "", yytext); break;
 
+   // 에러
    case TLONGIDERR: printLongIDError(); cErrors++; break;
    case TSWDIGITERR: printSWDigitError(); cErrors++; break;
    case TILLSYMBOLERR: printIllSymbolError(); cErrors++; break;
@@ -93,6 +103,7 @@ void main() {
    // 토큰을 구분하여 출력
     while((tn=yylex()) != TEOF){ 
       printtoken(tn);
+      if(overflow) break;
     }
 
    // 전체 에러 개수를 출력

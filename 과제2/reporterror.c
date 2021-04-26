@@ -42,5 +42,7 @@ void printIllSymbolError(){
 /* printOverflowrror
    : ST 오버플로우 오류를 출력한다 */
 void printOverflowError(){
-    printf("%-22s%-22s%-22s", "TIDENT", "OVERFLOW", yytext);
+    printf("%-22s", "***error***");
+    printf("%-22s", "");
+    printf("ST OVERFLOW, failed to save %s", yytext);
 }
