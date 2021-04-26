@@ -1,25 +1,22 @@
 /*
  * main.c - 각 token에 대한 출력
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date -
+ * date - 2021.04.28
  */
 
 #include <stdio.h>
 #include "tn.h"
 #include "glob.h"
 
-extern yylex();
-extern char *yytext;
 int lineCount = 1;
 int cErrors = 0;
-int insertflag = 0;
 
-
-/*
-* printtoken() --token type 별로 출력
-*/
+/* printtoken
+   : 토큰 타입 별로 출력한다
+     잘못된 토큰(에러)일 경우 에러를 출력해주고 전체 에러 수를 카운트한다 */
 void printtoken(enum tnumber tn) {
-   if (tn != TERROR) printf("%-22d", lineCount);
+   printf("%-22d", lineCount);
+
    switch (tn) {
    case TCONST: printf("%-22s%-22s%-22s", "TCONST","", yytext); break;
    case TELSE: printf("%-22s%-22s%-22s", "TELSE", "", yytext); break;
@@ -62,38 +59,45 @@ void printtoken(enum tnumber tn) {
    case TCOMMA: printf("%-22s%-22s%-22s", "TCOMMA", "", yytext); break;
    case TSEMICOLON: printf("%-22s%-22s%-22s", "TSEMICOLON", "", yytext); break;
 
-   case TBLANK: printf("%-22s%-22s%-22s", "TBLANK", "", yytext); break;
-   case TTAB: printf("%-22s%-22s%-22s", "TTAB", "", yytext); break;
-   case TNEWLINE: printf("%-22s%-22s", "TNEWLINE", ""); lineCount++;  break;
-
    case TINC: printf("%-22s%-22s%-22s", "TINC", "", yytext); break;
    case TDEC: printf("%-22s%-22s%-22s", "TDEC", "", yytext); break;
 
-   case TIDENT: { 
-      int hscode = ComputeHS(start, end);
-      int exist = LookupHS(hscode, start, end);
-      if (insertflag) insertID();
-      else deleteID();
-      printf("%-22s%-22d%-22s", "TIDENT", exist, yytext); break;
-   }
+   case TIDENT:
+      if(overflow){  // ST overflow 발생한 경우
+         printOverflowError();
+         cErrors++;
+      }
+      else printf("%-22s%-22d%-22s", "TIDENT", stindex, yytext);
+      break;
+
    case TNUMBER: printf("%-22s%-22s%-22s", "TNUMBER", "", yytext); break;
    case TRNUMBER: printf("%-22s%-22s%-22s", "TRNUMBER", "", yytext); break;
-   case TERROR: printError(); cErrors++;
+
+   case TLONGIDERR: printLongIDError(); cErrors++; break;
+   case TSWDIGITERR: printSWDigitError(); cErrors++; break;
+   case TILLSYMBOLERR: printIllSymbolError(); cErrors++; break;
+   
    }
    printf("\n");
 }
 
-
+/* main
+   : yylex()을 호출하여 토큰을 구분하여 출력한다
+     마지막에 전체 에러 개수를 출력하고 종료한다 */
 void main() {
     enum tnumber tn;    /* token type */
+
+   // 헤딩 출력
     printf("%-22s%-22s%-22s%-22s\n","Line number","Token type","ST-index","Token");
+
+   // 토큰을 구분하여 출력
     while((tn=yylex()) != TEOF){ 
       printtoken(tn);
     }
-   if (cErrors == 0) {
+
+   // 전체 에러 개수를 출력
+   if (cErrors == 0)
       printf("No errors detected\n");
-   }
-   else {
+   else
       printf("%d errors detected\n", cErrors);
-   }
 }

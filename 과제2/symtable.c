@@ -1,7 +1,7 @@
 /*
  * symtable.c - symboltable management
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 
+ * date - 2021.04.28
  */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -10,10 +10,11 @@
 #include <string.h>
 #include "glob.h"
 
-errorTypes err;            // 에러: 테스트위해서 잠깐 여기다가 선언..
-char ST[STsize];          // 스트링 테이블
-HTpointer HT[HTsize];       // 해쉬 테이블
-int start = 0, end = 0;      // ST내 시작끝위치
+char ST[STsize];           // 스트링 테이블
+HTpointer HT[HTsize];      // 해쉬 테이블
+int start = 0, end = 0;    // ST내 시작 끝위치
+int stindex;               // 현재 id의 ST-index
+int overflow = 0;          // 오버플로우 여부
 
 /* ReadID
    :identifier를 ST에 저장한다 */
@@ -24,8 +25,8 @@ void ReadID() {
    for(i = 0; i < yyleng; i++){
       // 오버플로우 체크
       if (end >= STsize) {
-         err = overst;
-         break;
+         overflow = 1;
+         return;
       }
 
       ST[end++] = yytext[i];
@@ -33,7 +34,7 @@ void ReadID() {
 
    // identifier 마지막에 널문자 추가
    if (end >= STsize)
-      err = overst;
+      overflow = 1;
    else
       ST[end++] = '\0';
 }
@@ -47,6 +48,7 @@ void deleteID() {
 /* insertID
    :ST에 받아두었던 id 저장 확정 */
 void insertID() {
+   stindex = start;
    start = end;
 }
 
@@ -99,12 +101,10 @@ void SymbolTable(){
    int hscode, exist;
 
    // id를 ST에 저장
-   err = noerror;
    ReadID();
 
    // ST에 오버플로우가 발생한 경우 종료
-   if (err == overst) {
-      deleteID();
+   if (overflow) {
       return;
    }
 
@@ -115,12 +115,10 @@ void SymbolTable(){
    // 존재하지 않는 경우에는 새로 HT에 삽입, 존재하는 경우 ST에서 제거
    if (exist == -1) {
       ADDHT(hscode, start);
-      printf("%s is stored at ST[%d]\n", ST + start, start);
-      insertflag = 1;
-      //insertID();
+      insertID();
    }
    else{
-      insertflag = 0;
-      //deleteID();
+      stindex = exist;
+      deleteID();
    }
 }

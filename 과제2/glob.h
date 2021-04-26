@@ -1,35 +1,33 @@
 /*
  * glob.h - global variable for the project
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 
+ * date - 2021.04.28
  */
 
-#define STsize 1000
-#define HTsize 100 
+#ifndef GLOB_H_
+#define GLOB_H_
+
+#define STsize 1000    // ST 사이즈
+#define HTsize 100     // HT 사이즈
 
 /* HT 관련 구조체 */
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
    int index;         // ST내 시작 인덱스
-   HTpointer next;      // 다음 id 포인터
+   HTpointer next;    // 다음 id 포인터
 } HTentry;
 
-/* 에러 정의 열거형 */
-typedef enum errorTypes {
-   //문제없음, id숫자시작, id허락되지않은문자, id길이초과, 오버플로우
-   noerror, swdigit, illid, longid, overst
-}errorTypes;
+void SymbolTable();           // 현재 id의 symbol table management를 수행
+void printIllSymbolError();   // ill symbol 에러 출력
+void printLongIDError();      // 12자 초과 에러 출력
+void printSWDigitError();     // 숫자로 시작 에러 출력
+void printOverflowError();    // ST 오버플로우 에러 출력
 
-void insertID();
-void deleteID();
-void SymbolTable();
-void printError();
-
+extern yylex();
+extern yyleng;
 extern char *yytext;
-extern int yyleng;
-extern errorTypes err;             // 현재 에러를 담고 있는 변수
-extern char ST[STsize];              // 스트링 테이블
-extern HTpointer HT[HTsize];       // 해쉬 테이블
-extern int start, end;              // 현재 identifier의 ST 내 시작, 끝 위치
-extern int lineCount;               // 라인 수
-extern int insertflag;
+extern int lineCount;      // 라인 수
+extern int stindex;        // 현재 id의 ST-index
+extern int overflow;       // ST 오버플로우 여부
+
+#endif

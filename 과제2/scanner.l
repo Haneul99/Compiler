@@ -2,7 +2,7 @@
     /*
     * scanner.l - lexical analyzer for the MiniC
     * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
-    * date - 
+    * date - 2021.04.28
     */
     #include <stdio.h>
     #include "tn.h"
@@ -10,7 +10,6 @@
 %}
 A       [A-Za-z_]
 D       [0-9]
-NZEROD  [1-9]
 %%
 "const"         return(TCONST);
 "else"          return(TELSE);
@@ -56,31 +55,28 @@ NZEROD  [1-9]
 ","             return(TCOMMA);
 ";"             return(TSEMICOLON);
 
-" "             return(TBLANK);
-"\t"            return(TTAB);
-"\n"            {
-                    return(TNEWLINE);
-                }
+(" "|"\t")      ;
+"\n"            lineCount++;
 
-{A}({A}|{D})*                   {
-                                    if(yyleng > 12){
-                                        err = longid;
-                                        return(TERROR);
-                                    }
-                                    else{
-                                        SymbolTable();
-                                        return(TIDENT);
-                                    }
-                                }
-{D}+                       return(TNUMBER);
-{D}+"."{D}+                return(TRNUMBER);
+{D}+                    return(TNUMBER);
+{D}+"."{D}+             return(TRNUMBER);
+
+{A}({A}|{D})*           {
+                            if(yyleng > 12) return(TLONGIDERR);
+                            else{
+                                SymbolTable();
+                                return(TIDENT);
+                            }
+                        }
+{D}({A}|{D})*           return(TSWDIGITERR);                          
+
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     int i;
                                     for(i = 0; i < yyleng; i++)
                                         if(yytext[i] == '\n') lineCount++;
                                 } 
-"//".*                          ;
-[^ \t\n"//""/*"]+               return(TERROR);
+"//".*          ;
+.               return(TILLSYMBOLERR);
 %%
 int yywrap()
 {
