@@ -1,0 +1,11 @@
+int main(){
+	int a = 1980;
+	int i;	
+	
+	//for loop
+	for(i=0;i<3;i++){
+		if(a<100) a++;
+		else return 30;
+	}
+}
+ _1980 _19_80 For for Else else
