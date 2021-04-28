@@ -103,7 +103,7 @@ void main() {
    // 토큰을 구분하여 출력
     while((tn=yylex()) != TEOF){ 
       printtoken(tn);
-      if(overflow) break;
+      if(overflow) break; // 오버플로우 발생 시 종료
     }
 
    // 전체 에러 개수를 출력
