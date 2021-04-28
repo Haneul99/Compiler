@@ -7,7 +7,7 @@
 #ifndef GLOB_H_
 #define GLOB_H_
 
-#define STsize 10    // ST 사이즈
+#define STsize 1000    // ST 사이즈
 #define HTsize 100     // HT 사이즈
 
 /* HT 관련 구조체 */
