@@ -46,3 +46,8 @@ void printOverflowError(){
     printf("%-22s", "");
     printf("ST OVERFLOW, failed to save %s", yytext);
 }
+
+void yyerror(char *s)
+{
+    printf("%s\n", s);
+}
