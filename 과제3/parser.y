@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <malloc.h>
+#include "tn.h"
+#include "glob.h"
 %}
 
 %token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE

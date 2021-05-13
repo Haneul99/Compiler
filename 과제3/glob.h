@@ -22,6 +22,7 @@ void printIllSymbolError();   // ill symbol 에러 출력
 void printLongIDError();      // 12자 초과 에러 출력
 void printSWDigitError();     // 숫자로 시작 에러 출력
 void printOverflowError();    // ST 오버플로우 에러 출력
+void printHStable();          // 해시 테이블 출력
 
 extern yylex();
 extern yyleng;
@@ -29,5 +30,6 @@ extern char *yytext;
 extern int lineCount;      // 라인 수
 extern int stindex;        // 현재 id의 ST-index
 extern int overflow;       // ST 오버플로우 여부
+extern int cErrors;        // 에러 개수
 
 #endif

@@ -7,6 +7,8 @@
     #include <stdio.h>
     #include "tn.h"
     #include "glob.h"
+    
+    int i;
 %}
 A       [A-Za-z_]
 D       [0-9]
@@ -72,7 +74,6 @@ D       [0-9]
 {D}({A}|{D})*           return(TSWDIGITERR);                          
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
-                                    int i;
                                     for(i = 0; i < yyleng; i++)
                                         if(yytext[i] == '\n') lineCount++;
                                 } 

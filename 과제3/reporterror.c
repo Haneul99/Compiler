@@ -47,6 +47,8 @@ void printOverflowError(){
     printf("ST OVERFLOW, failed to save %s", yytext);
 }
 
+/* yyerror
+   : 파싱중 발생한 오류를 출력한다 */
 void yyerror(char *s)
 {
     printf("%s\n", s);
