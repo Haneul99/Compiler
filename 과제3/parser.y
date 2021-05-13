@@ -41,7 +41,8 @@ dcl_specifier 		: type_qualifier
 					;
 type_qualifier 		: TCONST		
 					;
-type_specifier 		: TINT					
+type_specifier 		: TINT
+					| TFLOAT					
 		 			| TVOID		
 					;
 function_name 		: TIDENT
@@ -76,7 +77,7 @@ declarator 			: TIDENT
 	     			| TIDENT TBRALL opt_number TBRALR
 					;
 opt_number 			: TNUMBER				
-	     			|		
+					|		
 					;
 opt_stat_list 		: statement_list			
 		 			|			

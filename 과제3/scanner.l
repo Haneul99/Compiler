@@ -65,20 +65,29 @@ D       [0-9]
 {D}+"."{D}+             return(TRNUMBER);
 
 {A}({A}|{D})*           {
-                            if(yyleng > 12) return(TLONGIDERR);
+                            if(yyleng > 12){
+                                printLongIDError();
+                                cErrors++;
+                            }
                             else{
                                 SymbolTable();
                                 return(TIDENT);
                             }
                         }
-{D}({A}|{D})*           return(TSWDIGITERR);                          
+{D}({A}|{D})*           {
+                            printSWDigitError();          
+                            cErrors++;
+                        }                
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     for(i = 0; i < yyleng; i++)
                                         if(yytext[i] == '\n') lineCount++;
                                 } 
 "//".*          ;
-.               return(TILLSYMBOLERR);
+.              {
+                    printIllSymbolError();
+                    cErrors++;
+                }
 %%
 int yywrap()
 {
