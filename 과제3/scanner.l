@@ -18,6 +18,7 @@ D       [0-9]
 "return"        return(TRETURN);
 "void"          return(TVOID);
 "while"         return(TWHILE);
+"float"         return(TFLOAT);
 
 "+"             return(TADD);
 "-"             return(TSUB);
