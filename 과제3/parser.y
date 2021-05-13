@@ -4,6 +4,8 @@
 #include <malloc.h>
 #include "tn.h"
 #include "glob.h"
+
+int current_type;
 %}
 
 %token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE
@@ -21,62 +23,77 @@
 %%
 mini_c 				: translation_unit
 					;
-translation_unit 	: external_dcl				
+translation_unit 	: external_dcl	// 문장하나			
 					| translation_unit external_dcl
 					;
 external_dcl 		: function_def				
 		  			| declaration				
 					;
-function_def 		: function_header compound_st
+function_def 		: function_header // 함수 헤더 compound_st // 중괄호
 					;
-function_header 	: dcl_spec function_name formal_param
+function_header 	: dcl_spec // 리턴타입 function_name // 함수명 formal_param // 파라미터
 					;
 dcl_spec 			: dcl_specifiers
 					;
-dcl_specifiers 		: dcl_specifier				
-		 			| dcl_specifiers dcl_specifier
+dcl_specifiers 		: dcl_specifier					// const, int, float, void	1번
+		 			| dcl_specifiers dcl_specifier // const int 2번이상
 					;
 dcl_specifier 		: type_qualifier
 					| type_specifier
 					;
-type_qualifier 		: TCONST		
+type_qualifier 		: TCONST	// 여기도 current 에러 처리 해야되나?
 					;
-type_specifier 		: TINT
-					| TFLOAT					
-		 			| TVOID		
+type_specifier 		: TINT 		{current_type = INTEGER;}
+					| TFLOAT 	{current_type = FLOAT;}					
+		 			| TVOID		{current_type = VOID;}
 					;
-function_name 		: TIDENT
+function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_type;}
 					;
 formal_param 		: TBRASL opt_formal_param TBRASR 
+					| TBRASL opt_formal_param error {yyerrok; printNoBracket();}
 					;
 opt_formal_param 	: formal_param_list			
-		   			|	
+		   			|
 					;
 formal_param_list 	: param_dcl				
 		    		| formal_param_list TCOMMA param_dcl
-			 		;
+			 		| formal_param_list error {yyerrok; printSyntaxErr();}
+					;
 param_dcl 			: dcl_spec declarator
 					;
 compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR
-				 	;
+				 	| TBRAML opt_dcl_list opt_stat_list error {yyerrok; printNoBracket();}
+					;
 opt_dcl_list 		: declaration_list			
 					|	
 					;
 declaration_list 	: declaration				
-					| declaration_list declaration
+					| declaration_list declaration // 선언이 여러개올수잇음
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON
+					| dcl_spec init_dcl_list error {yyerrok; printNoSemicolon();}
 					;
 init_dcl_list 		: init_declarator			
 					| init_dcl_list TCOMMA init_declarator 
 					;
 init_declarator 	: declarator					
 		 			| declarator TASSIGN TNUMBER
+					| declarator TASSIGN TRNUMBER
 					;
-declarator 			: TIDENT					
-	     			| TIDENT TBRALL opt_number TBRALR
+declarator 			: TIDENT { // 스칼라 or 배열 or 파라미터
+						if(type == FUNCTION){ // 파라미터
+							idEntry->maintype = PARAMETER;
+						}
+						else{ // 스칼라
+							idEntry->maintype = SCALAR;
+						}
+						idEntry->subtype = current_type;
+					}					
+	     			| TIDENT TBRALL opt_number TBRALR {idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
+					| TIDENT TBRALL opt_number error {yyerrok; printNoBracket();}
 					;
-opt_number 			: TNUMBER				
+opt_number 			: TNUMBER
+					| TRNUMBER 				
 					|		
 					;
 opt_stat_list 		: statement_list			
@@ -92,6 +109,7 @@ statement 			: compound_st
 	   				| return_st				
 	   				;
 expression_st 		: opt_expression TSEMICOLON
+					| opt_expression error {yyerrok; printNoSemicolon();}
 					;
 opt_expression 		: expression				
 		 			|	
@@ -139,27 +157,30 @@ multiplicative_exp 	: unary_exp
 		    		| multiplicative_exp TMOD unary_exp
 				 	;
 unary_exp 			: postfix_exp				
-	   				| TSUB unary_exp			
+	   				| TSUB unary_exp // 마이너스 		
 	   				| TNOT unary_exp				
 	   				| TINC unary_exp			
 	   				| TDEC unary_exp
 					;
-postfix_exp 		: primary_exp				
-	      			| postfix_exp TBRALL expression TBRALR 	
-	      			| postfix_exp TBRASL opt_actual_param TBRASR 	
-	      			| postfix_exp TINC			
-	      			| postfix_exp TDEC
+postfix_exp 		: primary_exp	// id나 숫자			
+	      			| postfix_exp TBRALL expression TBRALR 	// 배열 a[i+2]
+	      			| postfix_exp TBRASL opt_actual_param TBRASR // 함수 파라미터 여러개 ()	
+	      			| postfix_exp TINC	// ++		
+	      			| postfix_exp TDEC  // --
 					;
 opt_actual_param 	: actual_param				
 		  			|					
 					;
 actual_param 		: actual_param_list
 					;
-actual_param_list 	: assignment_exp			
-		   			| actual_param_list TCOMMA assignment_exp 
+actual_param_list 	: assignment_exp	// 파라미터 한개		
+		   			| actual_param_list TCOMMA assignment_exp // 파라미터 여러개
+					| actual_param_list error {};
 					;
-primary_exp 		: TIDENT				
-	     			| TNUMBER				
+primary_exp 		: TIDENT		
+	     			| TNUMBER
+					| TRNUMBER				
 	     			| TBRASL expression TBRASR
+					| TBRASL expression error {yyerrok; printNoBracket();}
 					;
 %%

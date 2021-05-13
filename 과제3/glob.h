@@ -9,11 +9,21 @@
 
 #define STsize 1000    // ST 사이즈
 #define HTsize 100     // HT 사이즈
+#define SCALAR 1
+#define ARRAY 2
+#define FUNCTION 3
+#define PARAMETER 4
+#define INTEGER 100
+#define FLOAT 200
+#define VOID 300
 
 /* HT 관련 구조체 */
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
    int index;         // ST내 시작 인덱스
+   int maintype;        // id type (스칼라, 배열, 함수, 파라미터)
+   int subtype;       // 함수일 경우 return 타입, 아닐 경우 자료형
+   int lineNO;        // 라인 넘버
    HTpointer next;    // 다음 id 포인터
 } HTentry;
 
@@ -31,5 +41,7 @@ extern int lineCount;      // 라인 수
 extern int stindex;        // 현재 id의 ST-index
 extern int overflow;       // ST 오버플로우 여부
 extern int cErrors;        // 에러 개수
+extern int type;           // 현재 id type 번호
+extern HTpointer idEntry;   // 현재 id가 저장되어있는 HTentry 포인터
 
 #endif

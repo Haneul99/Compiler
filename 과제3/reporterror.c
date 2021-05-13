@@ -53,3 +53,7 @@ void yyerror(char *s)
 {
     printf("%s\n", s);
 }
+
+printNoSemicolon();
+printNoBracket();
+printSyntaxErr()

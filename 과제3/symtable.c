@@ -12,9 +12,12 @@
 
 char ST[STsize];           // 스트링 테이블
 HTpointer HT[HTsize];      // 해쉬 테이블
+HTpointer idEntry;         // 현재 id 저장된 HTentry 포인터
 int start = 0, end = 0;    // ST내 시작 끝위치
 int stindex;               // 현재 id의 ST-index
 int overflow = 0;          // 오버플로우 여부
+int type = 0;              // 현재 id type
+int lineCount = 1;         // 라인 넘버
 
 /* ReadID
    :identifier를 ST에 저장한다 */
@@ -84,6 +87,8 @@ void ADDHT(int hscode, int start) {
    }
    hte->index = start;
    hte->next = NULL;
+   hte->lineNO = lineCount;
+   idEntry = hte;
 
    HTpointer p = HT[hscode];
    if (p == NULL) {
