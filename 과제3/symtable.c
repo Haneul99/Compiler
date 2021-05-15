@@ -127,3 +127,22 @@ void SymbolTable(){
       deleteID();
    }
 }
+
+/* 해시 테이블 출력 */
+void printHStable() {
+	printf("\n\n[[ HASH TABLE ]]\n\n");
+
+	int i, cnt = 0;
+	HTpointer p;
+	for (i = 0; i < HTsize; i++) {
+		if (HT[i] == NULL) continue;
+
+		printf("Hash Code %2d:", i);
+		for (p = HT[i]; p != NULL; p = p->next) {
+			printf("%s   ", (ST + p->index));
+         printf("%d %d %d", p->maintype, p->subtype, p->lineNO);
+			cnt++;
+		}
+		printf("\n");
+	}
+}

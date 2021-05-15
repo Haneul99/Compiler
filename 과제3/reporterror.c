@@ -51,9 +51,15 @@ void printOverflowError(){
    : 파싱중 발생한 오류를 출력한다 */
 void yyerror(char *s)
 {
-    printf("%s\n", s);
+    printf("%d %s %s\n", lineCount, s, yytext);
 }
 
-printNoSemicolon();
-printNoBracket();
-printSyntaxErr()
+void printNoSemicolon() {
+    printf("%d: No Semicolon %s\n", lineCount, yytext);
+};
+void printNoBracket() {
+    printf("%d: No bracket %s\n", lineCount, yytext);
+};
+void printSyntaxErr(){
+    printf("%d: No comma %s\n", lineCount, yytext);
+}

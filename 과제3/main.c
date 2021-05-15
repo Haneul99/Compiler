@@ -17,5 +17,5 @@ int main(){
     printf("Parsing ends.***\n");
     printf("\n\n %d error(s) detected\n", cErrors);
 
-    printHT();
+    printHStable();
 }

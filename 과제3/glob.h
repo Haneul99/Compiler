@@ -9,6 +9,7 @@
 
 #define STsize 1000    // ST 사이즈
 #define HTsize 100     // HT 사이즈
+#define NONTYPE 0
 #define SCALAR 1
 #define ARRAY 2
 #define FUNCTION 3
@@ -33,6 +34,9 @@ void printLongIDError();      // 12자 초과 에러 출력
 void printSWDigitError();     // 숫자로 시작 에러 출력
 void printOverflowError();    // ST 오버플로우 에러 출력
 void printHStable();          // 해시 테이블 출력
+void printNoSemicolon();
+void printNoBracket();
+void printSyntaxErr();
 
 extern yylex();
 extern yyleng;

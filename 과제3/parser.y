@@ -31,7 +31,7 @@ external_dcl 		: function_def
 					;
 function_def 		: function_header compound_st // 중괄호
 					;
-function_header 	: dcl_spec function_name formal_param // 파라미터
+function_header 	: dcl_spec function_name formal_param {type = NONTYPE;}// 파라미터
 					;
 dcl_spec 			: dcl_specifiers
 					;
@@ -50,14 +50,14 @@ type_specifier 		: TINT 		{current_type = INTEGER;}
 function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_type;}
 					;
 formal_param 		: TBRASL opt_formal_param TBRASR 
-					| TBRASL opt_formal_param error {yyerrok; cErrors++; printNoBracket();}
+					//| TBRASL opt_formal_param error {yyerrok; cErrors++; printNoBracket();}
 					;
-opt_formal_param 	: formal_param_list			
-		   			|
+opt_formal_param 	: formal_param_list	
+					|	
 					;
 formal_param_list 	: param_dcl				
 		    		| formal_param_list TCOMMA param_dcl
-			 		| formal_param_list error {yyerrok; cErrors++; printSyntaxErr();}
+			 		| error {yyerrok; cErrors++; printSyntaxErr();}
 					;
 param_dcl 			: dcl_spec declarator
 					;
@@ -65,7 +65,6 @@ compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR
 				 	| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printNoBracket();}
 					;
 opt_dcl_list 		: declaration_list			
-					|	
 					;
 declaration_list 	: declaration				
 					| declaration_list declaration // 선언이 여러개올수잇음
@@ -89,15 +88,13 @@ declarator 			: TIDENT { // 스칼라 or 배열 or 파라미터
 						}
 						idEntry->subtype = current_type;
 					}					
-	     			| TIDENT TBRALL opt_number TBRALR {idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
+	     			| TIDENT TBRALL opt_number TBRALR {printf("%s ", yytext); idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
 					| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printNoBracket();}
 					;
 opt_number 			: TNUMBER
 					| TRNUMBER 				
-					|		
 					;
-opt_stat_list 		: statement_list			
-		 			|			
+opt_stat_list 		: statement_list				
 					;
 statement_list 		: statement				
 		 			| statement_list statement
@@ -112,7 +109,6 @@ expression_st 		: opt_expression TSEMICOLON
 					| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
 					;
 opt_expression 		: expression				
-		 			|	
 					;
 if_st 				: TIF TBRASL expression TBRASR statement %prec LOWER_THAN_ELSE	
 					| TIF TBRASL expression TBRASR statement TELSE statement
@@ -129,7 +125,7 @@ assignment_exp 		: logical_or_exp
 					| unary_exp TSUBASSIGN assignment_exp 	
 					| unary_exp TMULASSIGN assignment_exp 	
 					| unary_exp TDIVASSIGN assignment_exp 	
-					| unary_exp TMODASSIGN assignment_exp 	
+					| unary_exp TMODASSIGN assignment_exp
 					;
 logical_or_exp 		: logical_and_exp			
 					| logical_or_exp TOR logical_and_exp
@@ -168,14 +164,13 @@ postfix_exp 		: primary_exp	// id나 숫자
 	      			| postfix_exp TINC	// ++		
 	      			| postfix_exp TDEC  // --
 					;
-opt_actual_param 	: actual_param				
-		  			|					
+opt_actual_param 	: actual_param							
 					;
 actual_param 		: actual_param_list
 					;
 actual_param_list 	: assignment_exp	// 파라미터 한개		
 		   			| actual_param_list TCOMMA assignment_exp // 파라미터 여러개
-					| actual_param_list error {}
+					| error {yyerrok; cErrors++; printSyntaxErr();}
 					;
 primary_exp 		: TIDENT		
 	     			| TNUMBER
