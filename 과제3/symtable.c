@@ -72,7 +72,10 @@ int LookupHS(int hscode, int start, int end) {
    char str[22];
    strncpy(str, ST + start, end - start);
    for (; p != NULL; p = p->next) {
-      if (!strcmp(ST + p->index, str)) return p->index;   //존재하는 경우
+      if (!strcmp(ST + p->index, str)){
+         idEntry = p;
+         return p->index;   //존재하는 경우
+      }
    }
    return -1;   //존재하지 않는 경우
 }
