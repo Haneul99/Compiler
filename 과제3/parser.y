@@ -5,7 +5,8 @@
 #include "tn.h"
 #include "glob.h"
 
-int current_type;
+int current_data_type = NONTYPE;
+int check_const = 0;
 %}
 
 %token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE
@@ -29,11 +30,13 @@ translation_unit 	: external_dcl	// 문장하나
 					;
 external_dcl 		: function_def
 		  			| declaration
+					//| TIDENT TSEMICOLON
+					//| TIDENT
 					;
 function_def 		: function_header compound_st// 중괄호 
-					| function_header error {printf("unexpected tokens");} compound_st {yyerrok;}
+					//| function_header error {printf("unexpected tokens");} compound_st {yyerrok;}
 					;
-function_header 	: dcl_spec function_name formal_param { printf("header complete\n");type = NONTYPE;}// 파라미터
+function_header 	: dcl_spec function_name formal_param { printf("header complete\n"); type = NONTYPE;}// 파라미터
 					;
 dcl_spec 			: dcl_specifiers
 					;
@@ -43,16 +46,16 @@ dcl_specifiers 		: dcl_specifier					// const, int, float, void	1번
 dcl_specifier 		: type_qualifier
 					| type_specifier
 					;
-type_qualifier 		: TCONST	// 여기도 current 에러 처리 해야되나?
+type_qualifier 		: TCONST	{check_const = 1; } // 여기도 current 에러 처리 해야되나?
 					;
-type_specifier 		: TINT 		{current_type = INTEGER;}
-					| TFLOAT 	{current_type = FLOAT;}					
-		 			| TVOID		{current_type = VOID;}
+type_specifier 		: TINT 		{current_data_type = INTEGER;}
+					| TFLOAT 	{current_data_type = FLOAT;}					
+		 			| TVOID		{current_data_type = VOID;}
 					;
-function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_type;}
+function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_data_type;}
 					;
 formal_param 		: TBRASL opt_formal_param TBRASR
-					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
+					//| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
 					;
 opt_formal_param 	: formal_param_list	
 					|
@@ -63,7 +66,7 @@ formal_param_list 	: param_dcl
 param_dcl 			: dcl_spec declarator
 					;
 compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR
-				 	| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is disappear%s'\n", yytext);}
+				 	//| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is disappear%s'\n", yytext);}
 					;
 opt_dcl_list 		: declaration_list			
 					|
@@ -72,27 +75,40 @@ declaration_list 	: declaration
 					| declaration_list declaration // 선언이 여러개올수잇음
 					//| error declaration {yyerrok;}
 	 				;
-declaration 		: dcl_spec init_dcl_list TSEMICOLON
-					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
+declaration 		: dcl_spec init_dcl_list TSEMICOLON {current_data_type = NONTYPE; check_const = 0;}
+					//| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
 					//| error TSEMICOLON {yyerrok; cErrors; printf("invalid declaration\n");}
 					;
 init_dcl_list 		: init_declarator			
-					| init_dcl_list TCOMMA init_declarator 
+					| init_dcl_list TCOMMA init_declarator
 					;
 init_declarator 	: declarator					
 		 			| declarator TASSIGN TNUMBER
 					| declarator TASSIGN TRNUMBER
 					;
-declarator 			: TIDENT { // 스칼라 or 배열 or 파라미터
-						if(type == FUNCTION){ // 파라미터
+declarator 			: TIDENT {
+						// 스칼라
+						idEntry->subtype = SCALAR;
+						idEntry->datatype = current_data_type;
+						if(type == FUNCTION){ // 스칼라 파라미터
 							idEntry->maintype = PARAMETER;
 						}
-						else{ // 스칼라
-							idEntry->maintype = SCALAR;
+						else{ // 스칼라 변수
+							idEntry->maintype = VARIABLE;
+							idEntry->is_const = check_const;
 						}
-						idEntry->subtype = current_type;
 					}					
-	     			| TIDENT TBRALL opt_number TBRALR {idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
+	     			| TIDENT TBRALL opt_number TBRALR{
+						// 배열
+						idEntry->subtype = ARRAY;
+						idEntry->datatype = current_data_type;
+						if(type == FUNCTION){ // 배열 파라미터
+							idEntry->maintype = PARAMETER;
+						}
+						else{ // 배열 변수
+						  idEntry->maintype = VARIABLE;
+						} // 배열
+					}
 					//| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printNoBracket();}
 					;
 opt_number 			: TNUMBER

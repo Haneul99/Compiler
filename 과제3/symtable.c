@@ -86,6 +86,10 @@ void ADDHT(int hscode, int start) {
       exit(1);
    }
    hte->index = start;
+   hte->maintype = NONTYPE;
+   hte->subtype = NONTYPE;
+   hte->datatype = NONTYPE;
+   hte->is_const = 0;
    hte->next = NULL;
    hte->lineNO = lineCount;
    idEntry = hte;
@@ -139,8 +143,38 @@ void printHStable() {
 
 		printf("Hash Code %2d:", i);
 		for (p = HT[i]; p != NULL; p = p->next) {
-			printf("%s   ", (ST + p->index));
-         printf("%d %d %d", p->maintype, p->subtype, p->lineNO);
+			printf("  (%s: ", (ST + p->index));
+         
+         switch(p->maintype){
+            case NONTYPE:
+               printf("type is not defined, ");
+               break;
+            case VARIABLE:
+               if(p->is_const) printf("const ");
+               
+               if(p->datatype == INTEGER) printf("integer ");
+               else if(p->datatype == FLOAT) printf("float ");
+
+               if(p->subtype == SCALAR) printf("scalar variable,");
+               else if(p->subtype == ARRAY) printf("array variable,");
+               
+               break;
+            case FUNCTION:
+               printf("function name, return type = ");
+               if(p->datatype == VOID) printf("void, ");
+               else if(p->datatype == INTEGER) printf("integer, ");
+               else if(p->datatype == FLOAT) printf("float, ");
+               break;
+            case PARAMETER:
+               if(p->datatype == INTEGER) printf("integer ");
+               else if(p->datatype == FLOAT) printf("float ");
+
+               if(p->subtype == ARRAY) printf("array ");
+
+               printf("function parameter, ");
+               break;
+         }
+         printf("line %d)  ", p->lineNO);
 			cnt++;
 		}
 		printf("\n");

@@ -10,10 +10,11 @@
 #define STsize 1000    // ST 사이즈
 #define HTsize 100     // HT 사이즈
 #define NONTYPE 0
-#define SCALAR 1
-#define ARRAY 2
-#define FUNCTION 3
-#define PARAMETER 4
+#define FUNCTION 1
+#define PARAMETER 2
+#define VARIABLE 3
+#define SCALAR 10
+#define ARRAY 20
 #define INTEGER 100
 #define FLOAT 200
 #define VOID 300
@@ -22,8 +23,10 @@
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
    int index;         // ST내 시작 인덱스
-   int maintype;        // id type (스칼라, 배열, 함수, 파라미터)
-   int subtype;       // 함수일 경우 return 타입, 아닐 경우 자료형
+   int maintype;      // nontype OR function name OR parameter OR variable
+   int subtype;       // nontype OR scalar OR array
+   int datatype;      // nontype OR int OR float OR void
+   int is_const;      // true OR false
    int lineNO;        // 라인 넘버
    HTpointer next;    // 다음 id 포인터
 } HTentry;
