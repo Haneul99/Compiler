@@ -32,9 +32,10 @@ external_dcl 		: function_def		// 함수헤더+중괄호
 		  			| declaration		//	선언 (전역변수 선언)
 					;
 function_def 		: function_header compound_st			//함수 헤더(소괄호까지) +  중괄호 
-					| function_header error {printf("unexpected tokens\n");} compound_st {yyerrok;}
+					| error compound_st {yyerrok; cErrors++; printf("function header missing\n", yytext);} 
+					//| function_header error {printf("unexpected tokens\n");} compound_st {yyerrok;}
 					;
-function_header 	: dcl_spec function_name formal_param { printf("header complete\n");type = NONTYPE;}// 파라미터
+function_header 	: dcl_spec function_name formal_param {type = NONTYPE;}// 파라미터
 					//리턴타입  함수이름		소괄호
 					;
 dcl_spec 			: dcl_specifiers
@@ -58,7 +59,7 @@ function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->d
 
 //함수헤더의 소괄호
 formal_param 		: TBRASL opt_formal_param TBRASR    //  ( ~~~ )
-					//| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
+					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing before %s\n", yytext);}
 					;
 opt_formal_param 	: formal_param_list	 // 함수 인자들
 					|
@@ -82,7 +83,7 @@ declaration_list 	: declaration			// <- 이게 선언에서 세미콜론까지
 					//| error declaration {yyerrok;}
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON	{current_data_type = NONTYPE; check_const = 0;}		//자료형  //변수  //세미콜론
-					//| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
+					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
 					;
 init_dcl_list 		: init_declarator			//변수 한개
 					| init_dcl_list TCOMMA init_declarator 	//변수 여러개
@@ -133,7 +134,7 @@ statement 			: compound_st		//중괄호로 묶이는 부분
 	   				| return_st			//return a ;	
 	   				;
 expression_st 		: opt_expression TSEMICOLON		//모든 수식 + 세미콜론
-					//| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
+					| opt_expression error {yyerrok; cErrors++; printf("';' is disapper before %s\n", yytext);}
 					;
 opt_expression 		: expression		//모든 수식
 					|				
@@ -144,6 +145,7 @@ if_st 				: TIF TBRASL expression TBRASR statement %prec LOWER_THAN_ELSE
 while_st 			: TWHILE TBRASL expression TBRASR statement
 			 		;
 return_st 			: TRETURN opt_expression TSEMICOLON
+					| TRETURN opt_expression error {yyerrok; cErrors++; printf("';' is disapper before %s\n", yytext);}
 					;
 expression 			: assignment_exp		//모든 수식
 					;
