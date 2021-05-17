@@ -34,7 +34,7 @@ external_dcl 		: function_def
 					//| TIDENT
 					;
 function_def 		: function_header compound_st// 중괄호 
-					//| function_header error {printf("unexpected tokens");} compound_st {yyerrok;}
+					//| function_header error {printf("unexpected tokens\n");} compound_st {yyerrok;}
 					;
 function_header 	: dcl_spec function_name formal_param { printf("header complete\n"); type = NONTYPE;}// 파라미터
 					;
