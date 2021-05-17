@@ -25,13 +25,15 @@ mini_c 				: translation_unit
 					;
 translation_unit 	: external_dcl	// 문장하나			
 					| translation_unit external_dcl
+					//| translation_unit error {yyerrok; printf("unexpected %s\n", yytext);}
 					;
-external_dcl 		: function_def				
-		  			| declaration				
+external_dcl 		: function_def
+		  			| declaration
 					;
-function_def 		: function_header compound_st // 중괄호
+function_def 		: function_header compound_st// 중괄호 
+					| function_header error {printf("unexpected tokens");} compound_st {yyerrok;}
 					;
-function_header 	: dcl_spec function_name formal_param {type = NONTYPE;}// 파라미터
+function_header 	: dcl_spec function_name formal_param { printf("header complete\n");type = NONTYPE;}// 파라미터
 					;
 dcl_spec 			: dcl_specifiers
 					;
@@ -49,28 +51,30 @@ type_specifier 		: TINT 		{current_type = INTEGER;}
 					;
 function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_type;}
 					;
-formal_param 		: TBRASL opt_formal_param TBRASR 
-					//| TBRASL opt_formal_param error {yyerrok; cErrors++; printNoBracket();}
+formal_param 		: TBRASL opt_formal_param TBRASR
+					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
 					;
 opt_formal_param 	: formal_param_list	
-					|	
+					|
 					;
 formal_param_list 	: param_dcl				
 		    		| formal_param_list TCOMMA param_dcl
-			 		| error {yyerrok; cErrors++; printSyntaxErr();}
 					;
 param_dcl 			: dcl_spec declarator
 					;
 compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR
-				 	| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printNoBracket();}
+				 	| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is disappear%s'\n", yytext);}
 					;
 opt_dcl_list 		: declaration_list			
+					|
 					;
 declaration_list 	: declaration				
 					| declaration_list declaration // 선언이 여러개올수잇음
+					//| error declaration {yyerrok;}
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON
-					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printNoSemicolon();}
+					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
+					//| error TSEMICOLON {yyerrok; cErrors; printf("invalid declaration\n");}
 					;
 init_dcl_list 		: init_declarator			
 					| init_dcl_list TCOMMA init_declarator 
@@ -88,13 +92,15 @@ declarator 			: TIDENT { // 스칼라 or 배열 or 파라미터
 						}
 						idEntry->subtype = current_type;
 					}					
-	     			| TIDENT TBRALL opt_number TBRALR {printf("%s ", yytext); idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
-					| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printNoBracket();}
+	     			| TIDENT TBRALL opt_number TBRALR {idEntry->maintype = ARRAY; idEntry->subtype = current_type;} // 배열
+					//| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printNoBracket();}
 					;
 opt_number 			: TNUMBER
-					| TRNUMBER 				
+					| TRNUMBER 	
+					|			
 					;
-opt_stat_list 		: statement_list				
+opt_stat_list 		: statement_list
+					|				
 					;
 statement_list 		: statement				
 		 			| statement_list statement
@@ -106,9 +112,10 @@ statement 			: compound_st
 	   				| return_st				
 	   				;
 expression_st 		: opt_expression TSEMICOLON
-					| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
+					//| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
 					;
-opt_expression 		: expression				
+opt_expression 		: expression
+					|				
 					;
 if_st 				: TIF TBRASL expression TBRASR statement %prec LOWER_THAN_ELSE	
 					| TIF TBRASL expression TBRASR statement TELSE statement
@@ -167,15 +174,16 @@ postfix_exp 		: primary_exp	// id나 숫자
 opt_actual_param 	: actual_param							
 					;
 actual_param 		: actual_param_list
+					|
 					;
 actual_param_list 	: assignment_exp	// 파라미터 한개		
 		   			| actual_param_list TCOMMA assignment_exp // 파라미터 여러개
-					| error {yyerrok; cErrors++; printSyntaxErr();}
+					//| error {yyerrok; cErrors++; printSyntaxErr();}
 					;
 primary_exp 		: TIDENT		
 	     			| TNUMBER
 					| TRNUMBER				
 	     			| TBRASL expression TBRASR
-					| TBRASL expression error {yyerrok; cErrors++; printNoBracket();}
+					//| TBRASL expression error {yyerrok; cErrors++; printNoBracket();}
 					;
 %%

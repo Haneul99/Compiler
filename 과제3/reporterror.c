@@ -51,7 +51,7 @@ void printOverflowError(){
    : 파싱중 발생한 오류를 출력한다 */
 void yyerror(char *s)
 {
-    printf("%d %s %s\n", lineCount, s, yytext);
+    printf("%d\t%s\t!%s!\t", lineCount, s, yytext);
 }
 
 void printNoSemicolon() {
