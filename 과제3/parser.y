@@ -52,7 +52,7 @@ type_specifier 		: TINT 		{current_data_type = INTEGER;}
 					| TFLOAT 	{current_data_type = FLOAT;}					
 		 			| TVOID		{current_data_type = VOID;}
 					;
-function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->subtype = current_data_type;}
+function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->datatype = current_data_type;}
 					;
 formal_param 		: TBRASL opt_formal_param TBRASR
 					//| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
@@ -76,8 +76,7 @@ declaration_list 	: declaration
 					//| error declaration {yyerrok;}
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON {current_data_type = NONTYPE; check_const = 0;}
-					//| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
-					//| error TSEMICOLON {yyerrok; cErrors; printf("invalid declaration\n");}
+					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
 					;
 init_dcl_list 		: init_declarator			
 					| init_dcl_list TCOMMA init_declarator
