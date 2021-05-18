@@ -24,16 +24,15 @@ int check_const = 0;
 %%
 mini_c 				: translation_unit
 					;
-translation_unit 	: external_dcl			
+translation_unit 	: external_dcl		
 					| translation_unit external_dcl
-					| translation_unit error {yyerrok; printf("unexpected %s\n", yytext);}
+					| error external_dcl {yyerrok; cErrors++; printf("unexpected token '%s'\n", yytext); yyclearin;}
 					;
 external_dcl 		: function_def		// 함수헤더+중괄호
-		  			| declaration		//	선언 (전역변수 선언)
+		  			| declaration	{printf("declaration %s\n", yytext);}	//	선언 (전역변수 선언)
 					;
-function_def 		: function_header compound_st			//함수 헤더(소괄호까지) +  중괄호 
-					|  error {printf("wrong function definition\n");} compound_st {yyerrok;}   //<<<프린트 변경
-						//위의 에러에서, 중괄호 시작이 없을때도 잡힌다....
+function_def 		: function_header compound_st {printf("function_def\n");}			//함수 헤더(소괄호까지) +  중괄호 
+					| error {yyerrok; cErrors++; printf("unexpected token %s\n", yytext); yyclearin;} compound_st
 					;
 function_header 	: dcl_spec function_name formal_param { printf("header complete\n");type = NONTYPE;}// 파라미터
 					//리턴타입  함수이름		소괄호
@@ -59,12 +58,12 @@ function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->d
 
 //함수 선언부의 파라미터
 formal_param 		: TBRASL opt_formal_param TBRASR    //  ( ~~~ )
-					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing\n");}
+					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing before %s\n", yytext);}
 					;
 opt_formal_param 	: formal_param_list	 // 함수 인자들
 					|
 					;
-formal_param_list 	: param_dcl								//인자 1개
+formal_param_list 	: param_dcl {current_data_type = NONTYPE; check_const = 0;}				//인자 1개
 		    		| formal_param_list TCOMMA param_dcl	//인자 여러개 와야할 때
 					;
 param_dcl 			: dcl_spec declarator  	//dcl_spec: const int float void 	//declarator: tident나 배열
@@ -73,7 +72,7 @@ param_dcl 			: dcl_spec declarator  	//dcl_spec: const int float void 	//declara
 
 //중괄호 scope					
 compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR		//선언은 전부 앞에 해야함
-				 	//| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is disappear%s'\n", yytext);}
+					| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is disappear%s'\n", yytext);}
 					;
 opt_dcl_list 		: declaration_list		//선언 여러문장
 					|
@@ -134,7 +133,7 @@ statement 			: compound_st		//중괄호로 묶이는 부분
 	   				| return_st			//return a ;	
 	   				;
 expression_st 		: opt_expression TSEMICOLON		//모든 수식 + 세미콜론
-					| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
+					//| opt_expression error {yyerrok; cErrors++; printNoSemicolon();}
 					;
 opt_expression 		: expression		//모든 수식
 					|				
@@ -142,7 +141,7 @@ opt_expression 		: expression		//모든 수식
 if_st 				: TIF TBRASL expression TBRASR statement %prec LOWER_THAN_ELSE	
 					| TIF TBRASL expression TBRASR statement TELSE statement
 		 			;
-while_st 			: TWHILE TBRASL expression TBRASR statement
+while_st 			: TWHILE TBRASL expression TBRASR statement {printf("while\n");}
 			 		;
 return_st 			: TRETURN opt_expression TSEMICOLON
 					;
@@ -208,6 +207,6 @@ primary_exp 		: TIDENT					//변수
 	     			| TNUMBER					//정수
 					| TRNUMBER					//실수
 	     			| TBRASL expression TBRASR	//소괄호에 묶인거....
-					| TBRASL expression error {yyerrok; cErrors++; printNoBracket();}
+					| TBRASL expression error {yyerrok; cErrors++; printf("')' is missing before %s\n", yytext);}
 					;
 %%
