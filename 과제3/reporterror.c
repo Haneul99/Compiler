@@ -10,48 +10,38 @@
 #include <string.h>
 #include "glob.h"
 
-/* printError
-   : 에러 출력문의 공통 부분을 출력한다 */
-void printError(){
-    printf("%-22s", "***error***");
-    printf("%-22s", "");
-    printf("%s ", yytext);
-}
-
 /* printLongIDError
    : 12자 이상이라서 id가 될 수 없는 토큰의 오류를 출력한다 */
 void printLongIDError(){
-    printError();
-    printf("is too long");
+    printf("%d\t %-25s %s is too long\n", lineCount, "longID error", yytext);
 }
 
 /* printSWDigitError
    : 숫자로 시작해서 id가 될 수 없는 토큰의 오류를 출력한다 */
 void printSWDigitError(){
-    printError();
-    printf("starts with digit");
+    printf("%d\t %-25s %s starts with digit\n", lineCount, "start with digit error", yytext);
+    
 }
 
 /* printIllSymbolError
    : 잘못된 심볼 오류를 출력한다 */
 void printIllSymbolError(){
-    printError();
-    printf("is illegal symbol");
+    printf("%d\t %-25s %s is illegal symbol\n", lineCount, "illsymbol error", yytext);
 }
 
 /* printOverflowrror
    : ST 오버플로우 오류를 출력한다 */
 void printOverflowError(){
-    printf("%-22s", "***error***");
-    printf("%-22s", "");
-    printf("ST OVERFLOW, failed to save %s", yytext);
+    printf("%-25s", "***error***");
+    printf("%-25s", "");
+    printf("ST OVERFLOW, failed to save %s\n", yytext);
 }
 
 /* yyerror
    : 파싱중 발생한 오류를 출력한다 */
 void yyerror(char *s)
 {
-    printf("%d\t%s\t!%s!\t", lineCount, s, yytext);
+    printf("%d\t %-25s ", lineCount, s);
 }
 
 void printNoSemicolon() {
