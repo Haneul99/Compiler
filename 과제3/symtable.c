@@ -158,15 +158,16 @@ void printHStable() {
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
 
-               if(p->subtype == SCALAR) printf("scalar variable,");
-               else if(p->subtype == ARRAY) printf("array variable,");
+               if(p->subtype == SCALAR) printf("scalar variable, ");
+               else if(p->subtype == ARRAY) printf("array variable, ");
                
                break;
             case FUNCTION:
-               printf("function name, return type = ");
+               printf("function name, return type is ");
                if(p->datatype == VOID) printf("void, ");
                else if(p->datatype == INTEGER) printf("integer, ");
                else if(p->datatype == FLOAT) printf("float, ");
+               else if(p->datatype == NONTYPE) printf("not defined, ");
                break;
             case PARAMETER:
                if(p->datatype == INTEGER) printf("integer ");
