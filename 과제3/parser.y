@@ -117,7 +117,7 @@ declarator 			: TIDENT {  // 스칼라
 						  idEntry->maintype = VARIABLE;
 						} // 배열
 					}
-					| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printNoBracket();}
+					| TIDENT TBRALL opt_number error {yyerrok; cErrors++; printf("']' is missing before %s\n", yytext);}
 					;
 opt_number 			: TNUMBER	//정수
 					| TRNUMBER 	//실수
@@ -197,7 +197,8 @@ unary_exp 			: postfix_exp
 					;
 postfix_exp 		: primary_exp	// 변수, 숫자, 소괄호로 묶인거			
 	      			| postfix_exp TBRALL expression TBRALR 	// 배열 a[i+2]
-	      			| postfix_exp TBRASL opt_actual_param TBRASR // 함수 파라미터 여러개 ()	 //<< read(a,b,c); 
+	      			| postfix_exp TBRALL expression error {yyerrok; cErrors++; printf("']' is missing before %s\n", yytext);} 
+					| postfix_exp TBRASL opt_actual_param TBRASR // 함수 파라미터 여러개 ()	 //<< read(a,b,c); 
 	      			| postfix_exp TBRASL opt_actual_param error {yyerrok; cErrors++; printf("')' is missing before %s\n", yytext);}
 					| postfix_exp TINC	// ++		
 	      			| postfix_exp TDEC  // --
