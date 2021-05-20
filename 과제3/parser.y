@@ -33,11 +33,9 @@ external_dcl 		: function_def	// 함수헤더+중괄호
 					| error TBRAMR {yyerrok; cErrors++; printf("invalid external declaration until '}'\n");}
 					;
 function_def 		: function_header compound_st {printf("function_def\n");}			//함수 헤더(소괄호까지) +  중괄호 
-					//| function_header error {printf("invalid function def\n");}
 					;
 function_header 	: dcl_spec function_name formal_param { printf("header complete\n");type = NONTYPE;}// 파라미터
 					//리턴타입  함수이름		소괄호
-					//| error function_name formal_param {yyerrok; cErrors++; printf("return type missing\n");}
 					;
 dcl_spec 			: dcl_specifiers
 					;
@@ -61,7 +59,6 @@ function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->d
 //함수 선언부의 파라미터
 formal_param 		: TBRASL opt_formal_param TBRASR    //  ( ~~~ )
 					| TBRASL opt_formal_param error {yyerrok; cErrors++; printf("')' is missing before %s\n", yytext);}
-					//| error TBRASR {yyerrok; cErrors++; printf("invalid parameter dec\n");}
 					;
 opt_formal_param 	: formal_param_list	 // 함수 인자들
 					|
@@ -76,18 +73,15 @@ param_dcl 			: dcl_spec declarator  	//dcl_spec: const int float void 	//declara
 //중괄호 scope					
 compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR		//선언은 전부 앞에 해야함
 					| TBRAML opt_dcl_list opt_stat_list error {yyerrok; cErrors++; printf("'}' is missing\n", yytext);}
-					//| TBRAML error TBRAMR {yyerrok; cErrors++; printf("invalid compound statement\n");}
 					;
 opt_dcl_list 		: declaration_list		//선언 여러문장
 					|
 					;
 declaration_list 	: declaration			// <- 이게 선언에서 세미콜론까지
 					| declaration_list declaration // 선언이 여러개올수잇음
-					//| error declaration {yyerrok;}
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON	{current_data_type = NONTYPE; check_const = 0;}		//자료형  //변수  //세미콜론
 					| dcl_spec init_dcl_list error {yyerrok; cErrors++; printf("';' is disapper before '%s'\n", yytext); }
-					//| error TSEMICOLON {yyerrok; cErrors++; printf("invalid declaration\n");}
 					;
 init_dcl_list 		: init_declarator			//변수 한개
 					| init_dcl_list TCOMMA init_declarator 	//변수 여러개
@@ -135,13 +129,10 @@ statement 			: compound_st		//중괄호로 묶이는 부분
 	   				| expression_st		// 수식;
 	   				| if_st				//if() + statement	
 	   				| while_st			//while() + statement
-	   				| return_st			//return a ;	
-	   				//| error TSEMICOLON {yyerrok; cErrors++; printf("invalid until ;\n");}
-					//| error TBRAMR {yyerrok; cErrors++; printf("invliad until } \n");}
+	   				| return_st			//return a ;
 					;
 expression_st 		: opt_expression TSEMICOLON		//모든 수식 + 세미콜론
-					//| opt_expression error {yyerrok; cErrors++; printf("';' is disappear before %s\n", yytext);}
-					//| error TSEMICOLON {yyerrok; cErrors++; printf("invalid expression statement\n");}
+					| expression error {yyerrok; cErrors++; printf("';' is disappear before %s\n", yytext);}
 					;
 opt_expression 		: expression		//모든 수식
 					|				
@@ -152,7 +143,7 @@ if_st 				: TIF TBRASL expression TBRASR statement %prec LOWER_THAN_ELSE
 while_st 			: TWHILE TBRASL expression TBRASR statement {printf("while\n");}
 			 		;
 return_st 			: TRETURN opt_expression TSEMICOLON
-					//| TRETURN opt_expression error {yyerrok; cErrors++; printf("';' is disappear before %s\n", yytext);}
+					| TRETURN opt_expression error {yyerrok; cErrors++; printf("';' is disappear before %s\n", yytext);}
 					;
 expression 			: assignment_exp		//모든 수식
 					;
@@ -212,7 +203,6 @@ actual_param 		: actual_param_list		//인자 있는거
 					;
 actual_param_list 	: assignment_exp	// 파라미터 한개		
 		   			| actual_param_list TCOMMA assignment_exp // 파라미터 여러개
-					//| actual_param_list error assignment_exp {yyerrok; cErrors++; printf("',' is missing before %s\n", yytext); }
 					;
 primary_exp 		: TIDENT					//변수
 	     			| TNUMBER					//정수
