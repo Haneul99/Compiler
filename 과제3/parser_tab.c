@@ -851,11 +851,11 @@ case 7:
     break;}
 case 9:
 #line 42 "parser.y"
-{yyerrok; cErrors++; printNoFuncHeader();;
+{yyerrok; cErrors++; printInvalidFuncHeader();;
     break;}
 case 10:
 #line 43 "parser.y"
-{yyerrok; cErrors++; printNoFuncCompound_st();;
+{yyerrok; cErrors++; printInvalidFuncCompound_st();;
     break;}
 case 11:
 #line 45 "parser.y"

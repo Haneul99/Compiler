@@ -39,8 +39,8 @@ external_dcl 		: function_def
 					| error TBRAMR 		{yyerrok; cErrors++; printExternalDeclarationErrBracket();}		// external_dcl에서 문제가 생겼을 때 에러 출력
 					;
 function_def 		: function_header compound_st
-					| error compound_st		 		{yyerrok; cErrors++; printNoFuncHeader();}		 // 함수 헤더가 없을 때 에러 출력
-					| function_header error 		{yyerrok; cErrors++; printNoFuncCompound_st();}	 // 함수에서 중괄호 부분이 없을 때 에러 출력
+					| error compound_st		 		{yyerrok; cErrors++; printInvalidFuncHeader();}		 // 함수 헤더가 잘못된 경우 에러 출력
+					| function_header error 		{yyerrok; cErrors++; printInvalidFuncCompound_st();}	 // 함수에서 중괄호 부분이 잘못된 경우 에러 출력
 					;
 function_header 	: dcl_spec function_name formal_param {type = NONTYPE;}	// 함수 헤더 완료 -> 타입 초기화
 					;

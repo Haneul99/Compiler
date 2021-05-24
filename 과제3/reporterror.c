@@ -71,17 +71,17 @@ void printExternalDeclarationErrBracket(){
 }
 
 /* printNoFuncHeader
-   : 함수의 헤더가 없을 때 에러를 출력한다 */
-void printNoFuncHeader(){
+   : 함수의 헤더가 잘못되었을 때 에러를 출력한다 */
+void printInvalidFuncHeader(){
     printParseErrHeading();
-    printf("%s\n", "function header missing");
+    printf("%s\n", "invalid function header");
 }
 
 /* printNoFuncCompound_st
-   : 함수의 헤더 뒤에 오는 중괄호가 없을 때 에러를 출력한다 */
-void printNoFuncCompound_st(){
+   : 함수의 헤더 뒤에 오는 중괄호문이 잘못되었을 때 에러를 출력한다 */
+void printInvalidFuncCompound_st(){
     printParseErrHeading();
-    printf("%s\n", "compound statement missing");
+    printf("%s\n", "invalid compound statement at function def");
 }
 
 /* printNoSemicolon
