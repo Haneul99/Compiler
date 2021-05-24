@@ -188,13 +188,13 @@ static const short yyrline[] = { 0,
     45,    47,    49,    50,    52,    53,    55,    57,    58,    59,
     63,    67,    68,    70,    71,    73,    74,    76,    81,    82,
     84,    85,    87,    88,    90,    91,    93,    94,    96,    97,
-    98,   100,   111,   121,   123,   124,   125,   129,   130,   132,
-   133,   135,   136,   137,   138,   139,   141,   142,   144,   145,
-   147,   148,   150,   152,   153,   155,   157,   158,   159,   160,
-   161,   162,   163,   165,   166,   168,   169,   171,   172,   173,
-   175,   176,   177,   178,   179,   181,   182,   183,   185,   186,
-   187,   188,   190,   191,   192,   193,   194,   196,   197,   198,
-   199,   200,   201,   202,   204,   208,   209,   211,   212,   214,
+    98,   100,   113,   125,   127,   128,   129,   131,   132,   134,
+   135,   137,   138,   139,   140,   141,   143,   144,   146,   147,
+   149,   150,   152,   154,   155,   157,   159,   160,   161,   162,
+   163,   164,   165,   167,   168,   170,   171,   173,   174,   175,
+   177,   178,   179,   180,   181,   183,   184,   185,   187,   188,
+   189,   190,   192,   193,   194,   195,   196,   198,   199,   200,
+   201,   202,   203,   204,   206,   208,   209,   211,   212,   214,
    215,   216,   217,   218
 };
 
@@ -902,10 +902,11 @@ case 36:
 {yyerrok; cErrors++; printNoSemicolon(); ;
     break;}
 case 42:
-#line 100 "parser.y"
-{  // 스칼라
+#line 101 "parser.y"
+{  
 						idEntry->subtype = SCALAR;
 						idEntry->datatype = current_data_type;
+
 						if(type == FUNCTION){ // 스칼라 파라미터
 							idEntry->maintype = PARAMETER;
 						}
@@ -916,36 +917,37 @@ case 42:
 					;
     break;}
 case 43:
-#line 111 "parser.y"
-{  // 배열
+#line 114 "parser.y"
+{
 						idEntry->subtype = ARRAY;
 						idEntry->datatype = current_data_type;
+
 						if(type == FUNCTION){ // 배열 파라미터
 							idEntry->maintype = PARAMETER;
 						}
 						else{ // 배열 변수
 						  idEntry->maintype = VARIABLE;
-						} // 배열
+						}
 					;
     break;}
 case 44:
-#line 121 "parser.y"
+#line 125 "parser.y"
 {yyerrok; cErrors++; printNoSquareBracket();;
     break;}
 case 58:
-#line 142 "parser.y"
+#line 144 "parser.y"
 {yyerrok; cErrors++; printNoSemicolon();;
     break;}
 case 65:
-#line 153 "parser.y"
+#line 155 "parser.y"
 {yyerrok; cErrors++; printNoSemicolon();;
     break;}
 case 100:
-#line 198 "parser.y"
+#line 200 "parser.y"
 {yyerrok; cErrors++;printNoSquareBracket();
     break;}
 case 102:
-#line 200 "parser.y"
+#line 202 "parser.y"
 {yyerrok; cErrors++; printNoRoundBracket();;
     break;}
 case 114:

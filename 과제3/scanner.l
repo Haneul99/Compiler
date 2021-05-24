@@ -65,26 +65,28 @@ D       [0-9]
 {D}+"."{D}+             return(TRNUMBER);
 
 {A}({A}|{D})*           {
-                            if(yyleng > 12){
+                            if(yyleng > 12){ // 12자 초과 에러
                                 printLongIDError();
                                 cErrors++;
                             }
-                            else{
+                            else{ // 올바른 identifier
                                 SymbolTable();
                                 return(TIDENT);
                             }
                         }
 {D}({A}|{D})*           {
-                            printSWDigitError();          
+                            printSWDigitError();    // 숫자로 시작하는 id    
                             cErrors++;
                         }                
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
+                                    // 라인넘버 카운트
                                     for(i = 0; i < yyleng; i++)
                                         if(yytext[i] == '\n') lineCount++;
                                 } 
 "//".*          ;
-.              {
+.              {    
+                    // 잘못된 심볼
                     printIllSymbolError();
                     cErrors++;
                 }

@@ -135,11 +135,12 @@ void SymbolTable(){
    }
 }
 
-/* 해시 테이블 출력 */
+/* printHStable
+   : 해쉬 테이블을 출력하는 함수 */
 void printHStable() {
 	printf("\n\n[[ HASH TABLE ]]\n\n");
 
-	int i, cnt = 0;
+	int i;
 	HTpointer p;
 	for (i = 0; i < HTsize; i++) {
 		if (HT[i] == NULL) continue;
@@ -149,37 +150,50 @@ void printHStable() {
 			printf("  (%s: ", (ST + p->index));
          
          switch(p->maintype){
-            case NONTYPE:
+            // 1. 타입이 정의된 적 없는 경우
+            case NONTYPE:  
                printf("type is not defined, ");
                break;
-            case VARIABLE:
+
+            // 2. 변수
+            case VARIABLE: 
+               // const 여부 출력
                if(p->is_const) printf("const ");
-               
+               // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
-
+               // 스칼라 or 배열 출력
                if(p->subtype == SCALAR) printf("scalar variable, ");
                else if(p->subtype == ARRAY) printf("array variable, ");
-               
+            
                break;
-            case FUNCTION:
+
+            // 3. 함수이름
+            case FUNCTION: 
                printf("function name, return type is ");
+               // 리턴 타입 출력
                if(p->datatype == VOID) printf("void, ");
                else if(p->datatype == INTEGER) printf("integer, ");
                else if(p->datatype == FLOAT) printf("float, ");
-               else if(p->datatype == NONTYPE) printf("not defined, ");
+               
                break;
+
+            // 4. 파라미터
             case PARAMETER:
+               // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
 
+               // 스칼라 or 배열 출력
                if(p->subtype == ARRAY) printf("array ");
+               else if(p->subtype == SCALAR) printf("scalar ");
 
                printf("function parameter, ");
                break;
          }
+
+         // 라인넘버 출력
          printf("line %d)  ", p->lineNO);
-			cnt++;
 		}
 		printf("\n");
 	}
