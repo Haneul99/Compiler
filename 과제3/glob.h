@@ -1,7 +1,7 @@
 /*
  * glob.h - global variable for the project
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 2021.04.28
+ * date - 2021.05.26
  */
 
 #ifndef GLOB_H_
@@ -9,12 +9,19 @@
 
 #define STsize 1000    // ST 사이즈
 #define HTsize 100     // HT 사이즈
+
 #define NONTYPE 0
+
+/* maintype: nontype OR function name OR parameter OR variable */
 #define FUNCTION 1
 #define PARAMETER 2
 #define VARIABLE 3
+
+/* subtype: nontype OR scalar OR array */
 #define SCALAR 10
 #define ARRAY 20
+
+/* datatype: nontype OR int OR float OR void */
 #define INTEGER 100
 #define FLOAT 200
 #define VOID 300
@@ -26,7 +33,7 @@ typedef struct HTentry {
    int maintype;      // nontype OR function name OR parameter OR variable
    int subtype;       // nontype OR scalar OR array
    int datatype;      // nontype OR int OR float OR void
-   int is_const;      // true OR false
+   int is_const;      // CONST: true OR false
    int lineNO;        // 라인 넘버
    HTpointer next;    // 다음 id 포인터
 } HTentry;

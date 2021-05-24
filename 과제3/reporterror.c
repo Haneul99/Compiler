@@ -1,7 +1,7 @@
 /*
  * reporterror.c - printing error
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 2021.04.28
+ * date - 2021.05.26
  */
 
 #define _CRT_SECURE_NO_WARNINGS
