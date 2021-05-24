@@ -39,14 +39,22 @@ typedef struct HTentry {
 } HTentry;
 
 void SymbolTable();           // 현재 id의 symbol table management를 수행
+void printHStable();          // 해시 테이블 출력
+
 void printIllSymbolError();   // ill symbol 에러 출력
 void printLongIDError();      // 12자 초과 에러 출력
 void printSWDigitError();     // 숫자로 시작 에러 출력
 void printOverflowError();    // ST 오버플로우 에러 출력
-void printHStable();          // 해시 테이블 출력
-void printNoSemicolon();
-void printNoBracket();
-void printSyntaxErr();
+
+void printExternalDeclarationErrSemi();      //external_dcl 중, 세미콜론으로 끝나는 문장에 문제가 생겼을 때 에러 출력
+void printExternalDeclarationErrBracket();   //external_dcl 중, 중괄호로 끝나는 문장에 문제가 생겼을 때 에러 출력
+void printNoSemicolon();      // 세미콜론 없는 에러 출력
+void printNoSquareBracket();  // 대괄호 없는 에러 출력
+void printNoCurlyBracket();   // 중괄호 없는 에러 출력
+void printNoRoundBracket();   // 소괄호 없는 에러 출력
+void printNoFuncCompound_st();   //함수 헤더가 없을 때 에러 출력
+void printNoFuncHeader();     // 함수에서 중괄호 부분이 없을 때 에러 출력
+
 
 extern yylex();
 extern yyleng;
