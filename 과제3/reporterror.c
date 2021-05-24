@@ -74,7 +74,7 @@ void printExternalDeclarationErrBracket(){
    : 함수의 헤더가 잘못되었을 때 에러를 출력한다 */
 void printInvalidFuncHeader(){
     printParseErrHeading();
-    printf("%s\n", "invalid function header");
+    printf("%s\n", "function def with invalid function header");
 }
 
 /* printNoFuncCompound_st

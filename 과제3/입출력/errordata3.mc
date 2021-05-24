@@ -13,5 +13,4 @@ void main(){
     float n=3.1415; int m=4000;
     
     result=check(n,m);
-    write(result);
-}
+    write(result)
