@@ -6,6 +6,4 @@ void main(){
 
     while(a<=num){
         list[a]=list[a-1]+a;
-        write(list[a]);
     }
-

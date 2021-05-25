@@ -1,6 +1,5 @@
 void func1( {
     int a=123;
-    write(a);
 }
 
 float func2 ){

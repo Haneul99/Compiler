@@ -8,5 +8,4 @@ void main(){
     float result;
 
     result=0.1 * mul_cal(n,m;
-    write(result);
 }

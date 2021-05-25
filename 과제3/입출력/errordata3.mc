@@ -12,5 +12,4 @@ void main(){
     int result;
     float n=3.1415; int m=4000;
     
-    result=check(n,m);
-    write(result)
+    result=check(n,m)
