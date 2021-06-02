@@ -25,7 +25,9 @@ int check_const = 0;
 %token TIDENT 
 %token TNUMBER TRNUMBER
 %nonassoc LOWER_THAN_ELSE TSEMICOLON
-%nonassoc TELSE TBRAMR
+%nonassoc TELSE TBRAMR 
+
+
 
 %%
 mini_c 				: translation_unit
@@ -35,8 +37,8 @@ translation_unit 	: external_dcl
 					;
 external_dcl 		: function_def
 		  			| declaration
-					| error TSEMICOLON 	{yyerrok; cErrors++; printExternalDeclarationErrSemi();}		// external_dcl에서 문제가 생겼을 때 에러 출력
-					| error TBRAMR 		{yyerrok; cErrors++; printExternalDeclarationErrBracket();}		// external_dcl에서 문제가 생겼을 때 에러 출력
+					//| error TSEMICOLON 	{yyerrok; cErrors++; printExternalDeclarationErrSemi();}		// external_dcl에서 문제가 생겼을 때 에러 출력
+					//| error TBRAMR 		{yyerrok; cErrors++; printExternalDeclarationErrBracket();}		// external_dcl에서 문제가 생겼을 때 에러 출력
 					;
 function_def 		: function_header compound_st
 					| error compound_st		 		{yyerrok; cErrors++; printInvalidFuncHeader();}		 // 함수 헤더가 잘못된 경우 에러 출력
@@ -66,12 +68,14 @@ function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->d
 //함수 선언부의 파라미터
 formal_param 		: TBRASL opt_formal_param TBRASR
 					| TBRASL opt_formal_param error 	{yyerrok; cErrors++; printNoRoundBracket();}	//닫는 소괄호 없는 에러 출력
+					//컴마를 살리던가 소괄호를 살리던가
 					;
 opt_formal_param 	: formal_param_list	 // 함수 인자들
 					|
 					;
 formal_param_list 	: param_dcl 	{current_data_type = NONTYPE; check_const = 0;}		// 파라미터 선언 종료 -> 자료형, const 여부 초기화
 		    		| formal_param_list TCOMMA param_dcl
+					| formal_param_list  param_dcl error {yyerrok; cErrors++; printNoComma(); }
 					;
 param_dcl 			: dcl_spec declarator 
 					;
@@ -88,10 +92,12 @@ declaration_list 	: declaration
 					| declaration_list declaration
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON		{current_data_type = NONTYPE; check_const = 0;}		// 선언 종료 -> 자료형, const 여부 초기화
-					| dcl_spec init_dcl_list error 			{yyerrok; cErrors++; printNoSemicolon(); }			//세미콜론 없는 에러 출력
+					| dcl_spec init_dcl_list error  {yyerrok; cErrors++; printNoSemicolon(); }			//세미콜론 없는 에러 출력
+					//컴마를 살리던가 세미콜론을 살리던가
 					;
 init_dcl_list 		: init_declarator			
-					| init_dcl_list TCOMMA init_declarator 
+					| init_dcl_list TCOMMA init_declarator
+					| init_dcl_list init_declarator error {yyerrok; cErrors++; printNoComma(); }  // <<<<여기 컴마 오류
 					;
 init_declarator 	: declarator	
 		 			| declarator TASSIGN TNUMBER   
@@ -200,6 +206,7 @@ postfix_exp 		: primary_exp
 	      			| postfix_exp TBRALL expression error 		{yyerrok; cErrors++;printNoSquareBracket()} 	//닫는 대괄호 없는 에러 출력
 					| postfix_exp TBRASL opt_actual_param TBRASR 
 	      			| postfix_exp TBRASL opt_actual_param error {yyerrok; cErrors++; printNoRoundBracket();}	//닫는 소괄호 없는 에러 출력
+					//밑의 컴마를 살리던가 소괄호를 살리던가
 					| postfix_exp TINC	
 	      			| postfix_exp TDEC
 					;
@@ -210,6 +217,7 @@ actual_param 		: actual_param_list
 					;
 actual_param_list 	: assignment_exp		
 		   			| actual_param_list TCOMMA assignment_exp 
+					//| actual_param_list error assignment_exp {yyerrok; cErrors++; printf("No comma\n"); }
 					;
 primary_exp 		: TIDENT					
 	     			| TNUMBER					
