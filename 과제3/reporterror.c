@@ -111,3 +111,10 @@ void printNoRoundBracket() {
     printParseErrHeading();
     printf("%s %s\n", "')' is missing before", yytext);
 }
+
+/* printNoComma
+   : 컴마가 없을 때 오류를 출력한다 */
+void printNoComma(){
+    printParseErrHeading();
+    printf("%s %s\n", "'Comma' is missing before", yytext);
+}

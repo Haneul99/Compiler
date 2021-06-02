@@ -54,6 +54,7 @@ void printNoCurlyBracket();   // 중괄호 없는 에러 출력
 void printNoRoundBracket();   // 소괄호 없는 에러 출력
 void printInvalidFuncCompound_st();   //함수 헤더가 없을 때 에러 출력
 void printInvalidFuncHeader();     // 함수에서 중괄호 부분이 없을 때 에러 출력
+void printNoComma();          // 컴마가 없는 에러 출력
 
 
 extern yylex();
