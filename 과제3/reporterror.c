@@ -116,5 +116,5 @@ void printNoRoundBracket() {
    : 컴마가 없을 때 오류를 출력한다 */
 void printNoComma(){
     printParseErrHeading();
-    printf("%s %s\n", "Comma is missing");
+    printf("%s\n", "Comma is missing");
 }
