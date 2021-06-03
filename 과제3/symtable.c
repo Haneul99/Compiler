@@ -197,4 +197,6 @@ void printHStable() {
 		}
 		printf("\n");
 	}
+
+   printf("\n<%d characters are used in the string table>\n", end);
 }
