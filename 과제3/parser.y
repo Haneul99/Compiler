@@ -22,7 +22,7 @@ int check_const = 0;
 %token TEQUAL TNOTEQU TGREATE TLESSE TGREAT TLESS
 %token TINC TDEC
 %token TBRASL TBRASR TBRAML TBRAMR TBRALL TBRALR TCOMMA TSEMICOLON
-%token TIDENT 
+%token TIDENT
 %token TNUMBER TRNUMBER
 %nonassoc LOWER_THAN_ELSE TSEMICOLON
 %nonassoc TELSE TBRAMR 
@@ -37,8 +37,8 @@ translation_unit 	: external_dcl
 					;
 external_dcl 		: function_def
 		  			| declaration
-					//| error TSEMICOLON 	{yyerrok; cErrors++; printExternalDeclarationErrSemi();}		// external_dcl에서 문제가 생겼을 때 에러 출력
-					//| error TBRAMR 		{yyerrok; cErrors++; printExternalDeclarationErrBracket();}		// external_dcl에서 문제가 생겼을 때 에러 출력
+					| error TSEMICOLON 	{yyerrok; cErrors++; printExternalDeclarationErrSemi();}		// external_dcl에서 문제가 생겼을 때 에러 출력
+					| error TBRAMR 		{yyerrok; cErrors++; printExternalDeclarationErrBracket();}		// external_dcl에서 문제가 생겼을 때 에러 출력
 					;
 function_def 		: function_header compound_st
 					| error compound_st		 		{yyerrok; cErrors++; printInvalidFuncHeader();}		 // 함수 헤더가 잘못된 경우 에러 출력
@@ -88,7 +88,7 @@ compound_st 		: TBRAML opt_dcl_list opt_stat_list TBRAMR
 opt_dcl_list 		: declaration_list
 					|
 					;
-declaration_list 	: declaration			
+declaration_list 	: declaration
 					| declaration_list declaration
 	 				;
 declaration 		: dcl_spec init_dcl_list TSEMICOLON		{current_data_type = NONTYPE; check_const = 0;}		// 선언 종료 -> 자료형, const 여부 초기화
@@ -96,8 +96,8 @@ declaration 		: dcl_spec init_dcl_list TSEMICOLON		{current_data_type = NONTYPE;
 					//컴마를 살리던가 세미콜론을 살리던가
 					;
 init_dcl_list 		: init_declarator			
-					| init_dcl_list TCOMMA init_declarator
-					| init_dcl_list init_declarator error {yyerrok; cErrors++; printNoComma(); }  // <<<<여기 컴마 오류
+					| init_dcl_list TCOMMA init_declarator 
+					| init_dcl_list init_declarator error  {yyerrok; cErrors++; printNoComma(); }  // <<<<여기 컴마 오류
 					;
 init_declarator 	: declarator	
 		 			| declarator TASSIGN TNUMBER   
@@ -134,7 +134,7 @@ opt_number 			: TNUMBER
 					| TRNUMBER 
 					|			
 					;
-opt_stat_list 		: statement_list
+opt_stat_list 		: statement_list 
 					|				
 					;
 statement_list 		: statement			
@@ -160,7 +160,7 @@ while_st 			: TWHILE TBRASL expression TBRASR statement
 return_st 			: TRETURN opt_expression TSEMICOLON
 					| TRETURN opt_expression error 		{yyerrok; cErrors++; printNoSemicolon();}	//세미콜론 없는 에러 출력
 					;
-expression 			: assignment_exp	
+expression 			: assignment_exp
 					;
 assignment_exp 		: logical_or_exp			
 					| unary_exp TASSIGN assignment_exp
@@ -169,31 +169,50 @@ assignment_exp 		: logical_or_exp
 					| unary_exp TMULASSIGN assignment_exp 	
 					| unary_exp TDIVASSIGN assignment_exp 
 					| unary_exp TMODASSIGN assignment_exp
+					| unary_exp TASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| unary_exp TADDASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| unary_exp TSUBASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| unary_exp TMULASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| unary_exp TDIVASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| unary_exp TMODASSIGN error {yyerrok; cErrors++; printf("Wrong!\n");}
 					;
 logical_or_exp 		: logical_and_exp			
 					| logical_or_exp TOR logical_and_exp	
+					| logical_or_exp TOR error {yyerrok; cErrors++; printf("Wrong!\n");}
 		 			;
 logical_and_exp 	: equality_exp				
-		 			| logical_and_exp TAND equality_exp  	
+		 			| logical_and_exp TAND equality_exp  
+					| logical_and_exp TAND error {yyerrok; cErrors++; printf("Wrong!\n");}	
 		 			;
 equality_exp 		: relational_exp			
 					| equality_exp TEQUAL relational_exp 	
 					| equality_exp TNOTEQU relational_exp
+					| equality_exp TEQUAL error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| equality_exp TNOTEQU error {yyerrok; cErrors++; printf("Wrong!\n");}
 		 			;
 relational_exp 		: additive_exp 			
 					| relational_exp TGREAT additive_exp 	
 					| relational_exp TLESS additive_exp 	
 					| relational_exp TGREATE additive_exp 	
 					| relational_exp TLESSE additive_exp
+					| relational_exp TGREAT error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| relational_exp TLESS error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| relational_exp TGREATE error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| relational_exp TLESSE error {yyerrok; cErrors++; printf("Wrong!\n");}
 		 			;
 additive_exp 		: multiplicative_exp			
 					| additive_exp TADD multiplicative_exp 	
 					| additive_exp TSUB multiplicative_exp	
+					|additive_exp TADD error {yyerrok; cErrors++; printf("Wrong!\n");}
+					|additive_exp TSUB error {yyerrok; cErrors++; printf("Wrong!\n");}
 		 			;
 multiplicative_exp 	: unary_exp				
 		    		| multiplicative_exp TMUL unary_exp 
 		    		| multiplicative_exp TDIV unary_exp 	
 		    		| multiplicative_exp TMOD unary_exp		
+					| multiplicative_exp TMUL error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| multiplicative_exp TDIV error {yyerrok; cErrors++; printf("Wrong!\n");}
+					| multiplicative_exp TMOD error {yyerrok; cErrors++; printf("Wrong!\n");}
 				 	;
 unary_exp 			: postfix_exp				
 	   				| TSUB unary_exp 
