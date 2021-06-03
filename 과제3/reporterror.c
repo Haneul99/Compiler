@@ -87,8 +87,8 @@ void printInvalidFuncCompound_st(){
 /* printNoSemicolon
    : 세미콜론이 없을 때 오류를 출력한다 */
 void printNoSemicolon() {
-    printParseErrHeading();
-    printf("%s %s\n", "';' is disappeared before",yytext);
+    printf("%d\t %-25s ", lineCount-1, "parse error");
+    printf("%s\n", "';' is disappeared");
 }
 
 /* printNoSquareBracket
