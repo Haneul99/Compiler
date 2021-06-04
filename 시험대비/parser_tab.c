@@ -57,6 +57,7 @@
 
 int current_data_type = NONTYPE;
 int check_const = 0;
+int funcSTindex = 0;
 
 #ifndef YYLTYPE
 typedef
@@ -200,16 +201,16 @@ static const short yyrline[] = { 0,
     48,    50,    51,    53,    54,    56,    58,    59,    60,    64,
     68,    69,    72,    73,    75,    76,    77,    79,    84,    85,
     87,    88,    90,    91,    94,    95,    98,    99,   100,   102,
-   103,   104,   106,   119,   131,   133,   134,   135,   137,   138,
-   140,   141,   143,   144,   145,   146,   147,   150,   151,   153,
-   154,   156,   157,   158,   159,   161,   162,   162,   164,   165,
-   167,   169,   170,   171,   172,   173,   174,   175,   176,   177,
-   178,   179,   180,   181,   183,   184,   185,   187,   188,   189,
-   191,   192,   193,   194,   195,   197,   198,   199,   200,   201,
-   202,   203,   204,   205,   207,   208,   209,   210,   211,   213,
-   214,   215,   216,   217,   218,   219,   221,   222,   223,   224,
-   225,   227,   228,   229,   230,   231,   233,   234,   236,   238,
-   239,   241,   242,   245,   246,   247,   248,   249
+   103,   104,   106,   120,   133,   135,   136,   137,   139,   140,
+   142,   143,   145,   146,   147,   148,   149,   152,   153,   155,
+   156,   158,   159,   160,   161,   163,   164,   164,   166,   167,
+   169,   171,   172,   173,   174,   175,   176,   177,   178,   179,
+   180,   181,   182,   183,   185,   186,   187,   189,   190,   191,
+   193,   194,   195,   196,   197,   199,   200,   201,   202,   203,
+   204,   205,   206,   207,   209,   210,   211,   212,   213,   215,
+   216,   217,   218,   219,   220,   221,   223,   224,   225,   226,
+   227,   229,   230,   231,   232,   233,   235,   236,   238,   240,
+   241,   243,   244,   247,   248,   249,   250,   251
 };
 
 static const char * const yytname[] = {   "$","error","$undefined.","TCONST",
@@ -925,6 +926,10 @@ case 7:
 #line 41 "parser.y"
 {yyerrok; cErrors++; printExternalDeclarationErrBracket();;
     break;}
+case 8:
+#line 43 "parser.y"
+{funcSTindex = GLOBAL;;
+    break;}
 case 9:
 #line 45 "parser.y"
 {type = NONTYPE;;
@@ -951,7 +956,7 @@ case 19:
     break;}
 case 20:
 #line 64 "parser.y"
-{type = FUNCTION; idEntry->maintype = type; idEntry->datatype = current_data_type;;
+{type = FUNCTION; idEntry->maintype = type; idEntry->datatype = current_data_type; funcSTindex = idEntry->index; idEntry->scope = funcSTindex;;
     break;}
 case 22:
 #line 69 "parser.y"
@@ -986,6 +991,7 @@ case 43:
 {  
 						idEntry->subtype = SCALAR;
 						idEntry->datatype = current_data_type;
+						idEntry->scope = funcSTindex;
 
 						if(type == FUNCTION){ // 스칼라 파라미터
 							idEntry->maintype = PARAMETER;
@@ -997,10 +1003,11 @@ case 43:
 					;
     break;}
 case 44:
-#line 120 "parser.y"
+#line 121 "parser.y"
 {
 						idEntry->subtype = ARRAY;
 						idEntry->datatype = current_data_type;
+						idEntry->scope = funcSTindex;
 
 						if(type == FUNCTION){ // 배열 파라미터
 							idEntry->maintype = PARAMETER;
@@ -1011,119 +1018,119 @@ case 44:
 					;
     break;}
 case 45:
-#line 131 "parser.y"
+#line 133 "parser.y"
 {yyerrok; cErrors++; printNoSquareBracket();;
     break;}
 case 59:
-#line 151 "parser.y"
+#line 153 "parser.y"
 {yyerrok; cErrors++; printNoSemicolon();;
     break;}
 case 64:
-#line 158 "parser.y"
+#line 160 "parser.y"
 {yyerrok; cErrors++; printInvalidExpressionBra();;
     break;}
 case 65:
-#line 159 "parser.y"
+#line 161 "parser.y"
 {yyerrok; cErrors++; printInvalidExpressionBra();;
     break;}
 case 67:
-#line 162 "parser.y"
+#line 164 "parser.y"
 {printInvalidExpressionBra();;
     break;}
 case 68:
-#line 162 "parser.y"
+#line 164 "parser.y"
 {yyerrok; cErrors++;;
     break;}
 case 70:
-#line 165 "parser.y"
+#line 167 "parser.y"
 {yyerrok; cErrors++; printNoSemicolon();;
     break;}
 case 79:
-#line 176 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 80:
-#line 177 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 81:
 #line 178 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
-case 82:
+case 80:
 #line 179 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
-case 83:
+case 81:
 #line 180 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
-case 84:
+case 82:
 #line 181 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
+case 83:
+#line 182 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
+case 84:
+#line 183 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
 case 87:
-#line 185 "parser.y"
+#line 187 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 90:
-#line 189 "parser.y"
+#line 191 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 94:
-#line 194 "parser.y"
+#line 196 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 95:
-#line 195 "parser.y"
+#line 197 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 101:
-#line 202 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 102:
-#line 203 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 103:
 #line 204 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
-case 104:
+case 102:
 #line 205 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
+case 103:
+#line 206 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
+case 104:
+#line 207 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
 case 108:
-#line 210 "parser.y"
+#line 212 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 109:
-#line 211 "parser.y"
+#line 213 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
 case 114:
-#line 217 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 115:
-#line 218 "parser.y"
-{yyerrok; cErrors++; printInvalidExpression();;
-    break;}
-case 116:
 #line 219 "parser.y"
 {yyerrok; cErrors++; printInvalidExpression();;
     break;}
+case 115:
+#line 220 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
+case 116:
+#line 221 "parser.y"
+{yyerrok; cErrors++; printInvalidExpression();;
+    break;}
 case 124:
-#line 229 "parser.y"
+#line 231 "parser.y"
 {yyerrok; cErrors++;printNoSquareBracket();
     break;}
 case 126:
-#line 231 "parser.y"
+#line 233 "parser.y"
 {yyerrok; cErrors++; printNoRoundBracket();;
     break;}
 case 138:
-#line 249 "parser.y"
+#line 251 "parser.y"
 {yyerrok; cErrors++; printNoRoundBracket();;
     break;}
 }
@@ -1324,5 +1331,5 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 251 "parser.y"
+#line 253 "parser.y"
 

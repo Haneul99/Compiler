@@ -13,6 +13,7 @@
 
 int current_data_type = NONTYPE;
 int check_const = 0;
+int funcSTindex = 0;
 %}
 
 %token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE
@@ -39,7 +40,7 @@ external_dcl 		: function_def
 					| error TSEMICOLON {yyerrok; cErrors++; printExternalDeclarationErrSemi();}
 					| error TBRAMR {yyerrok; cErrors++; printExternalDeclarationErrBracket();}
 					;
-function_def 		: function_header compound_st
+function_def 		: function_header compound_st {funcSTindex = GLOBAL;} // 함수 밖으로 나왔다고 표시
 					;
 function_header 	: dcl_spec function_name formal_param {type = NONTYPE;}	// 함수 헤더 완료 -> 타입 초기화
 					| error function_name formal_param {yyerrok; cErrors++; printInvalidFuncHeader();}
@@ -60,7 +61,7 @@ type_specifier 		: TINT 		{current_data_type = INTEGER;}	// 정수형 저장
 					;
 
 //함수 이름
-function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->datatype = current_data_type;}		// 함수 타입, 리턴 타입 저장
+function_name 		: TIDENT 	{type = FUNCTION; idEntry->maintype = type; idEntry->datatype = current_data_type; funcSTindex = idEntry->index; idEntry->scope = funcSTindex;}		// 함수 타입, 리턴 타입 저장
 					;
 
 //함수 선언부의 파라미터
@@ -106,6 +107,7 @@ declarator 			: TIDENT // 스칼라
 					{  
 						idEntry->subtype = SCALAR;
 						idEntry->datatype = current_data_type;
+						idEntry->scope = funcSTindex;
 
 						if(type == FUNCTION){ // 스칼라 파라미터
 							idEntry->maintype = PARAMETER;
@@ -119,6 +121,7 @@ declarator 			: TIDENT // 스칼라
 					{
 						idEntry->subtype = ARRAY;
 						idEntry->datatype = current_data_type;
+						idEntry->scope = funcSTindex;
 
 						if(type == FUNCTION){ // 배열 파라미터
 							idEntry->maintype = PARAMETER;

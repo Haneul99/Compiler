@@ -73,8 +73,13 @@ int LookupHS(int hscode, int start, int end) {
    strncpy(str, ST + start, end - start);
    for (; p != NULL; p = p->next) {
       if (!strcmp(ST + p->index, str)){
-         idEntry = p;
-         return p->index;   //존재하는 경우
+         if(p->maintype == FUNCTION || p->maintype == NONTYPE)
+            return p->index;
+
+         if(p->scope == funcSTindex){
+            idEntry = p;
+            return p->index;   //존재하는 경우
+         }
       }
    }
    return -1;   //존재하지 않는 경우

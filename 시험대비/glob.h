@@ -26,6 +26,8 @@
 #define FLOAT 200
 #define VOID 300
 
+#define GLOBAL 1001
+
 /* HT 관련 구조체 */
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
@@ -33,6 +35,7 @@ typedef struct HTentry {
    int maintype;      // nontype OR function name OR parameter OR variable
    int subtype;       // nontype OR scalar OR array
    int datatype;      // nontype OR int OR float OR void
+   int scope;         // 스코프, 속하는 함수 이름의 start index
    int is_const;      // CONST: true OR false
    int lineNO;        // 라인 넘버
    HTpointer next;    // 다음 id 포인터
@@ -66,5 +69,5 @@ extern int overflow;       // ST 오버플로우 여부
 extern int cErrors;        // 에러 개수
 extern int type;           // 현재 id type 번호
 extern HTpointer idEntry;   // 현재 id가 저장되어있는 HTentry 포인터
-
+extern int funcSTindex;
 #endif
