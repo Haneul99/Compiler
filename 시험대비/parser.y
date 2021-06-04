@@ -28,7 +28,6 @@ int check_const = 0;
 %nonassoc TELSE
 
 
-
 %%
 mini_c 				: translation_unit
 					;
