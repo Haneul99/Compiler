@@ -27,8 +27,6 @@ int check_const = 0;
 %nonassoc LOWER_THAN_ELSE
 %nonassoc TELSE
 
-
-
 %%
 mini_c 				: translation_unit
 					;
