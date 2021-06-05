@@ -58,7 +58,7 @@ D       [0-9]
 (" "|"\t")      ;
 "\n"            lineCount++;
 
-{D}+                    return(TNUMBER);
+{D}+|(0(x|X)[0-9A-Fa-f]+)               return(TNUMBER);
 {D}+"."{D}+             return(TRNUMBER);
 
 {A}({A}|{D})*           {
@@ -68,7 +68,9 @@ D       [0-9]
                                 return(TIDENT);
                             }
                         }
-{D}({A}|{D})*           return(TSWDIGITERR);                          
+{D}({A}|{D})*           return(TSWDIGITERR);
+"'"[^']"'"              return(TCHAR);    
+\"([^\042\134]|\\.)*\"     return(TSTRING);                           
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     int i;

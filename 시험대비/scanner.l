@@ -61,23 +61,19 @@ D       [0-9]
 (" "|"\t")      ;
 "\n"            lineCount++;
 
-{D}+                    return(TNUMBER);
-{D}+"."{D}+             return(TRNUMBER);
+{D}+|(0(x|X)[0-9A-Fa-f]+)               return(TNUMBER);
+{D}+"."{D}+                             return(TRNUMBER);
 
 {A}({A}|{D})*           {
-                            if(yyleng > 12){ // 12자 초과 에러
-                                printLongIDError();
-                                cErrors++;
-                            }
-                            else{ // 올바른 identifier
-                                SymbolTable();
-                                return(TIDENT);
-                            }
+                            SymbolTable();
+                            return(TIDENT);
                         }
 {D}({A}|{D})*           {
                             printSWDigitError();    // 숫자로 시작하는 id    
                             cErrors++;
-                        }                
+                        }
+"'"[^']"'"                        return(TCHAR);             
+\"([^\042\134]|\\(.|[\n]))*\"     return(TSTRING);     
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     // 라인넘버 카운트

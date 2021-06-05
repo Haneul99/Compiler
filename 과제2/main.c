@@ -18,6 +18,9 @@ void printtoken(enum tnumber tn) {
    printf("%-22d", lineCount);
 
    switch (tn) {
+   case TSTRING: printf("%-22s%-22s%-22s", "TSTRING", "", yytext); break;
+   case TCHAR: printf("%-22s%-22s%-22s", "TCHAR", "", yytext); break;
+
    // 예약어
    case TCONST: printf("%-22s%-22s%-22s", "TCONST","", yytext); break;
    case TELSE: printf("%-22s%-22s%-22s", "TELSE", "", yytext); break;
