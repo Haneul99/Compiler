@@ -15,5 +15,5 @@ enum tokentypes {TEOF,
                 TBRASL, TBRASR, TBRAML, TBRAMR, TBRALL, TBRALR, TCOMMA, TSEMICOLON,
                 TIDENT,
                 TNUMBER, TRNUMBER,
-                TSTRING, TCHAR,
+                TSTRING, TCHAR, TSTRINGVALUE, TCHARVALUE,
                 TLONGIDERR, TSWDIGITERR, TILLSYMBOLERR};

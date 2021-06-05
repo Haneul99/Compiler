@@ -18,6 +18,8 @@ D       [0-9]
 "return"        return(TRETURN);
 "void"          return(TVOID);
 "while"         return(TWHILE);
+"char"          return(TCHAR);
+"string"        return(TSTRING);
 
 "+"             return(TADD);
 "-"             return(TSUB);
@@ -69,8 +71,15 @@ D       [0-9]
                             }
                         }
 {D}({A}|{D})*           return(TSWDIGITERR);
-"'"[^']"'"              return(TCHAR);    
-\"([^\042\134]|\\.)*\"     return(TSTRING);                           
+\'(.)*\'                {
+                            if(yyleng == 3 && yytext[1] != '\'')
+                                return(TCHARVALUE);
+                            else{
+                               
+                                printf("wrong char value\n");
+                            }
+                        }
+\"([^\042\134]|\\.)*\"     return(TSTRINGVALUE);                           
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     int i;

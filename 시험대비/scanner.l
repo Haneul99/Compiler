@@ -82,7 +82,7 @@ D       [0-9]
                                 printWrongCharValue();
                             }
                         }         
-\"([^\042\134]|\\(.|[\n]))*\"     return(TSTRINGVALUE);     
+\"([^\042\134]|\\.)*\"     return(TSTRINGVALUE);     
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     // 라인넘버 카운트
