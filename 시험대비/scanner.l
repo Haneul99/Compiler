@@ -21,6 +21,8 @@ D       [0-9]
 "void"          return(TVOID);
 "while"         return(TWHILE);
 "float"         return(TFLOAT);
+"char"          return(TCHAR);
+"string"        return(TSTRING);
 
 "+"             return(TADD);
 "-"             return(TSUB);
@@ -72,8 +74,8 @@ D       [0-9]
                             printSWDigitError();    // 숫자로 시작하는 id    
                             cErrors++;
                         }
-"'"[^']"'"                        return(TCHAR);             
-\"([^\042\134]|\\(.|[\n]))*\"     return(TSTRING);     
+"'"[^']"'"                        return(TCHARVALUE);             
+\"([^\042\134]|\\(.|[\n]))*\"     return(TSTRINGVALUE);     
 
 "/*"([^*]|\*+[^*/])*\**"*/"     {
                                     // 라인넘버 카운트

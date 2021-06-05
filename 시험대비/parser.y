@@ -24,7 +24,7 @@ int funcSTindex = 0;
 %token TINC TDEC
 %token TBRASL TBRASR TBRAML TBRAMR TBRALL TBRALR TCOMMA TSEMICOLON
 %token TIDENT
-%token TNUMBER TRNUMBER
+%token TNUMBER TRNUMBER TCHARVALUE TSTRINGVALUE
 %nonassoc LOWER_THAN_ELSE
 %nonassoc TELSE
 
@@ -104,6 +104,8 @@ init_dcl_list 		: init_declarator
 init_declarator 	: declarator	
 		 			| declarator TASSIGN TNUMBER   
 					| declarator TASSIGN TRNUMBER	
+					| declarator TASSIGN TCHARVALUE
+					| declarator TASSIGN TSTRINGVALUE
 					;
 declarator 			: TIDENT // 스칼라
 					{  
@@ -248,7 +250,9 @@ actual_param_list 	: assignment_exp
 					;
 primary_exp 		: TIDENT					
 	     			| TNUMBER					
-					| TRNUMBER					
+					| TRNUMBER	
+					| TCHARVALUE
+					| TSTRINGVALUE				
 	     			| TBRASL expression TBRASR	
 					| TBRASL expression error 	{yyerrok; cErrors++; printNoRoundBracket();}	// 닫는 소괄호 없는 에러 출력
 					;

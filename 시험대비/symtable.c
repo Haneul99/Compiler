@@ -1,7 +1,7 @@
 /*
  * symtable.c - symboltable management
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 2021.05.26
+ * date - 2021.06.05
  */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -162,13 +162,15 @@ void printHStable() {
 
             // 2. 변수
             case VARIABLE: 
+               // 소속 함수명 출력
+               printf("scope: %s, ", (ST + p->scope));
                // const 여부 출력
                if(p->is_const) printf("const ");
                // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
-               else if(p->datatype == CHAR) {printf("char "); break;}
-               else if(p->datatype == STRING) {printf("string "); break;}
+               else if(p->datatype == CHAR) {printf("char variable, "); break;}
+               else if(p->datatype == STRING) {printf("string variable, "); break;}
                // 스칼라 or 배열 출력
                if(p->subtype == SCALAR) printf("scalar variable, ");
                else if(p->subtype == ARRAY) printf("array variable, ");
@@ -188,6 +190,9 @@ void printHStable() {
 
             // 4. 파라미터
             case PARAMETER:
+               // 소속 함수명 출력
+               printf("scope: %s, ", (ST + p->scope)); 
+
                // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
