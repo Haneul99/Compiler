@@ -47,7 +47,7 @@ void SymbolTable();           // 현재 id의 symbol table management를 수행
 void printHStable();          // 해시 테이블 출력
 
 void printIllSymbolError();   // ill symbol 에러 출력
-void printLongIDError();      // 12자 초과 에러 출력
+void printWrongCharValue();   // 잘못된 문자상수값 에러 출력
 void printSWDigitError();     // 숫자로 시작 에러 출력
 void printOverflowError();    // ST 오버플로우 에러 출력
 

@@ -61,7 +61,7 @@
 
 int current_data_type = NONTYPE;
 int check_const = 0;
-int funcSTindex = 0;
+int funcSTindex = GLOBAL;
 
 #ifndef YYLTYPE
 typedef

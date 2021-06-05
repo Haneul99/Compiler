@@ -164,7 +164,6 @@ void printHStable() {
             // 2. 변수
             case VARIABLE: 
                // 소속 함수명 출력
-               printf("ccccc: %d", p->scope);
                if(p->scope == GLOBAL)
                   printf("scope: %s, ", "global");
                else

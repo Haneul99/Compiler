@@ -24,6 +24,13 @@ void printSWDigitError(){
     
 }
 
+/* printWrongCharValue
+   : 작은 따옴표 안에 작은 따옴표가 오거나 1자 미만 또는 2자이상의 문자열이 온 경우 오류 출력한다 */
+void printWrongCharValue(){
+    printTokenErrHeading();
+    printf("%s is invalid character value\n", yytext);
+}
+
 /* printIllSymbolError
    : 잘못된 심볼 오류를 출력한다 */
 void printIllSymbolError(){
