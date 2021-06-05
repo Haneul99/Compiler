@@ -1,7 +1,7 @@
 /*
  * parser.y - YACC source for the Modified MiniC
  * programmer - 팀 6: 1876375정하늘, 1971039이진경, 1971051최수정
- * date - 2021.05.26
+ * date - 2021.06.05
  */
 
 %{
