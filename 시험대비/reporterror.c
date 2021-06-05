@@ -16,13 +16,6 @@ void printTokenErrHeading(){
     printf("%d\t %-25s ", lineCount, "token error");
 }
 
-/* printLongIDError
-   : 12자 이상이라서 id가 될 수 없는 토큰의 오류를 출력한다 */
-void printLongIDError(){
-    printTokenErrHeading();
-    printf("%s is too long\n", yytext);
-}
-
 /* printSWDigitError
    : 숫자로 시작해서 id가 될 수 없는 토큰의 오류를 출력한다 */
 void printSWDigitError(){

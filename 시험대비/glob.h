@@ -21,10 +21,12 @@
 #define SCALAR 10
 #define ARRAY 20
 
-/* datatype: nontype OR int OR float OR void */
+/* datatype: nontype OR int OR float OR void OR CHAR OR STRING */
 #define INTEGER 100
 #define FLOAT 200
 #define VOID 300
+#define CHAR 400
+#define STRING 500
 
 #define GLOBAL 1001
 

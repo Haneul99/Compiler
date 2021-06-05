@@ -16,7 +16,7 @@ int check_const = 0;
 int funcSTindex = 0;
 %}
 
-%token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE
+%token TCONST TELSE TIF TINT TFLOAT TRETURN TVOID TWHILE TCHAR TSTRING
 %token TADD TSUB TMUL TDIV TMOD
 %token TASSIGN TADDASSIGN TSUBASSIGN TMULASSIGN TDIVASSIGN TMODASSIGN
 %token TOR TAND TNOT
@@ -58,6 +58,8 @@ type_qualifier 		: TCONST	{check_const = 1; } 			// const 여부 저장
 type_specifier 		: TINT 		{current_data_type = INTEGER;}	// 정수형 저장
 					| TFLOAT 	{current_data_type = FLOAT;}	// 실수형 저장	
 		 			| TVOID		{current_data_type = VOID;}		// void형 저장
+					| TCHAR		{current_data_type = CHAR;}		// char형 저장
+					| TSTRING	{current_data_type = STRING;}	// string형 저장
 					;
 
 //함수 이름
