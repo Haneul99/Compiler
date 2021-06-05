@@ -97,6 +97,7 @@ void ADDHT(int hscode, int start) {
    hte->maintype = NONTYPE;
    hte->subtype = NONTYPE;
    hte->datatype = NONTYPE;
+   hte->scope = GLOBAL;
    hte->is_const = 0;
    hte->next = NULL;
    hte->lineNO = lineCount;
@@ -163,7 +164,11 @@ void printHStable() {
             // 2. 변수
             case VARIABLE: 
                // 소속 함수명 출력
-               printf("scope: %s, ", (ST + p->scope));
+               printf("ccccc: %d", p->scope);
+               if(p->scope == GLOBAL)
+                  printf("scope: %s, ", "global");
+               else
+                  printf("scope: %s, ", (ST + p->scope));
                // const 여부 출력
                if(p->is_const) printf("const ");
                // 자료형 출력
