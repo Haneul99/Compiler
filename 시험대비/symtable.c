@@ -173,8 +173,8 @@ void printHStable() {
                // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
-               else if(p->datatype == CHAR) {printf("char variable, "); break;}
-               else if(p->datatype == STRING) {printf("string variable, "); break;}
+               else if(p->datatype == CHAR) {printf("char ");}
+               else if(p->datatype == STRING) {printf("string ");}
                // 스칼라 or 배열 출력
                if(p->subtype == SCALAR) printf("scalar variable, ");
                else if(p->subtype == ARRAY) printf("array variable, ");
@@ -200,8 +200,8 @@ void printHStable() {
                // 자료형 출력
                if(p->datatype == INTEGER) printf("integer ");
                else if(p->datatype == FLOAT) printf("float ");
-               else if(p->datatype == CHAR) {printf("char function parameter, "); break;}
-               else if(p->datatype == STRING) {printf("string function parameter, "); break;}
+               else if(p->datatype == CHAR) {printf("char ");}
+               else if(p->datatype == STRING) {printf("string ");}
 
                // 스칼라 or 배열 출력
                if(p->subtype == ARRAY) printf("array ");
